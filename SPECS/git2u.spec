@@ -47,7 +47,7 @@
 %global ius_suffix 2u
 
 Name:           %{real_name}%{?ius_suffix}
-Version:        2.1.3
+Version:        2.2.0
 Release:        1.ius%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
@@ -691,6 +691,10 @@ rm -rf %{buildroot}
 # No files for you!
 
 %changelog
+* Fri Nov 28 2014 Carl George <carl.george@rackspace.com> - 2.2.0-1.ius
+- Latest upstream
+- Rename perl and emacs modules for consistency
+
 * Mon Nov 17 2014 Ben Harper <ben.harper@rackspace.com> - 2.1.3-1.ius
 - porting from https://kojipkgs.fedoraproject.org//packages/git/2.1.0/5.fc22/src/git-2.1.0-5.fc22.src.rpm
 
