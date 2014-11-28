@@ -310,7 +310,7 @@ Conflicts:      perl-Git < %{version}
 %description -n perl-Git%{?ius_suffix}
 Perl interface to Git.
 
-%package -n perl-Git-SVN%{?ius_suffix}
+%package -n perl-Git%{?ius_suffix}-SVN
 Summary:        Perl interface to Git::SVN
 Group:          Development/Libraries
 %if %{noarch_sub}
@@ -320,8 +320,10 @@ Requires:       git = %{version}-%{release}
 Requires:       perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
 Provides:       perl-Git-SVN = %{version}-%{release}
 Conflicts:      perl-Git-SVN < %{version}
+Provides:       perl-Git-SVN%{?ius_suffix} = %{version}-%{release}
+Obsoletes:      perl-Git-SVN%{?ius_suffix} <= 2.1.3-2.ius
 
-%description -n perl-Git-SVN%{?ius_suffix}
+%description -n perl-Git%{?ius_suffix}-SVN
 Perl interface to Git.
 
 %package -n emacs-git%{?ius_suffix}
@@ -340,7 +342,7 @@ Conflicts:      emacs-git < %{version}
 %description -n emacs-git%{?ius_suffix}
 %{summary}.
 
-%package -n emacs-git-el%{?ius_suffix}
+%package -n emacs-git%{?ius_suffix}-el
 Summary:        Elisp source files for git version control system support for Emacs
 Group:          Applications/Editors
 %if %{noarch_sub}
@@ -349,8 +351,10 @@ BuildArch:      noarch
 Requires:       emacs-git = %{version}-%{release}
 Provides:       emacs-git-el = %{version}-%{release}
 Conflicts:      emacs-git-el < %{version}
+Provides:       emacs-git-el%{?ius_suffix} = %{version}-%{release}
+Obsoletes:      emacs-git-el%{?ius_suffix} <= 2.1.3-2.ius
 
-%description -n emacs-git-el%{?ius_suffix}
+%description -n emacs-git%{?ius_suffix}-el
 %{summary}.
 
 %prep
@@ -646,7 +650,7 @@ rm -rf %{buildroot}
 %exclude %{_mandir}/man3/*Git*SVN*.3pm*
 %{!?_without_docs: %{_mandir}/man3/*Git*.3pm*}
 
-%files -n perl-Git-SVN%{?ius_suffix} -f perl-git-svn-files
+%files -n perl-Git%{?ius_suffix}-SVN -f perl-git-svn-files
 %defattr(-,root,root)
 %{!?_without_docs: %{_mandir}/man3/*Git*SVN*.3pm*}
 
@@ -657,7 +661,7 @@ rm -rf %{buildroot}
 %{elispdir}/*.elc
 %{_emacs_sitestartdir}/git-init.el
 
-%files -n emacs-git-el%{?ius_suffix}
+%files -n emacs-git%{?ius_suffix}-el
 %defattr(-,root,root)
 %{elispdir}/*.el
 
