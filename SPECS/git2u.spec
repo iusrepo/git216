@@ -387,7 +387,7 @@ DESTDIR = %{buildroot}
 INSTALL = install -p
 GITWEB_PROJECTROOT = %{_var}/lib/git
 GNU_ROFF = 1
-htmldir = %{?_pkgdocdir}%{!?_pkgdocdir:%{_docdir}/%{real_name}-%{version}}
+htmldir = %{?_pkgdocdir}%{!?_pkgdocdir:%{_docdir}/%{name}-%{version}}
 prefix = %{_prefix}
 gitwebdir = %{_var}/www/git
 EOF
