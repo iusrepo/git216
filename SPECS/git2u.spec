@@ -48,7 +48,7 @@
 
 Name:           %{real_name}%{?ius_suffix}
 Version:        2.2.0
-Release:        1.ius%{?dist}
+Release:        2.ius%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
 Group:          Development/Tools
@@ -201,6 +201,7 @@ Conflicts:      gitweb < %{version}
 %description -n gitweb%{?ius_suffix}
 Simple web interface to track changes in git repositories
 
+%if 0%{?rhel} >= 7
 %package hg
 Summary:        Git tools for working with mercurial repositories
 Group:          Development/Tools
@@ -214,6 +215,7 @@ Conflicts:      git-hg < %{version}
 
 %description hg
 %{summary}.
+%endif
 
 %package p4
 Summary:        Git tools for working with Perforce depots
@@ -523,7 +525,10 @@ perl -p \
 %endif
 
 # Install bzr and hg remote helpers from contrib
-install -pm 755 contrib/remote-helpers/git-remote-{bzr,hg} %{buildroot}%{gitcoredir}
+install -pm 755 contrib/remote-helpers/git-remote-bzr %{buildroot}%{gitcoredir}
+%if 0%{?rhel} >= 7
+install -pm 755 contrib/remote-helpers/git-remote-hg %{buildroot}%{gitcoredir}
+%endif
 
 # Setup bash completion
 mkdir -p %{buildroot}%{_sysconfdir}/bash_completion.d
@@ -592,9 +597,11 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %{gitcoredir}/git-remote-bzr
 
+%if 0%{?rhel} >= 7
 %files hg
 %defattr(-,root,root)
 %{gitcoredir}/git-remote-hg
+%endif
 
 %files p4
 %defattr(-,root,root)
@@ -691,6 +698,9 @@ rm -rf %{buildroot}
 # No files for you!
 
 %changelog
+* Mon Dec 01 2014 Carl George <carl.george@rackspace.com> - 2.2.0-2.ius
+- Only build hg subpackage on el7+
+
 * Fri Nov 28 2014 Carl George <carl.george@rackspace.com> - 2.2.0-1.ius
 - Latest upstream
 - Rename perl and emacs modules for consistency
