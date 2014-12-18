@@ -47,8 +47,8 @@
 %global ius_suffix 2u
 
 Name:           %{real_name}%{?ius_suffix}
-Version:        2.2.0
-Release:        2.ius%{?dist}
+Version:        2.2.1
+Release:        1.ius%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
 Group:          Development/Tools
@@ -698,6 +698,9 @@ rm -rf %{buildroot}
 # No files for you!
 
 %changelog
+* Thu Dec 18 2014 Carl George <carl.george@rackspace.com> - 2.2.1-1.ius
+- Latest upstream
+
 * Mon Dec 01 2014 Carl George <carl.george@rackspace.com> - 2.2.0-2.ius
 - Only build hg subpackage on el7+
 
