@@ -47,7 +47,7 @@
 %global ius_suffix 2u
 
 Name:           %{real_name}%{?ius_suffix}
-Version:        2.2.2
+Version:        2.3.0
 Release:        1.ius%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
@@ -698,6 +698,9 @@ rm -rf %{buildroot}
 # No files for you!
 
 %changelog
+* Fri Feb 06 2015 Carl George <carl.george@rackspace.com> - 2.3.0-1.ius
+- Latest upstream
+
 * Tue Jan 13 2015 Carl George <carl.george@rackspace.com> - 2.2.2-1.ius
 - Latest upstream
 
