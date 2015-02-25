@@ -35,11 +35,13 @@
 %global gnome_keyring       1
 %global use_new_rpm_filters 1
 %global use_systemd         1
+%global with_hg             1
 %else
 %global desktop_vendor_tag  1
 %global gnome_keyring       0
 %global use_new_rpm_filters 0
 %global use_systemd         0
+%global with_hg             0
 %endif
 
 
@@ -201,7 +203,7 @@ Conflicts:      gitweb < %{version}
 %description -n gitweb%{?ius_suffix}
 Simple web interface to track changes in git repositories
 
-%if 0%{?rhel} >= 7
+%if 0%{?with_hg}
 %package hg
 Summary:        Git tools for working with mercurial repositories
 Group:          Development/Tools
@@ -215,7 +217,7 @@ Conflicts:      git-hg < %{version}
 
 %description hg
 %{summary}.
-%endif
+%endif # with_hg
 
 %package p4
 Summary:        Git tools for working with Perforce depots
@@ -526,9 +528,9 @@ perl -p \
 
 # Install bzr and hg remote helpers from contrib
 install -pm 755 contrib/remote-helpers/git-remote-bzr %{buildroot}%{gitcoredir}
-%if 0%{?rhel} >= 7
+%if 0%{?with_hg}
 install -pm 755 contrib/remote-helpers/git-remote-hg %{buildroot}%{gitcoredir}
-%endif
+%endif # with_hg
 
 # Setup bash completion
 mkdir -p %{buildroot}%{_sysconfdir}/bash_completion.d
@@ -597,11 +599,11 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %{gitcoredir}/git-remote-bzr
 
-%if 0%{?rhel} >= 7
+%if 0%{?with_hg}
 %files hg
 %defattr(-,root,root)
 %{gitcoredir}/git-remote-hg
-%endif
+%endif # with_hg
 
 %files p4
 %defattr(-,root,root)
