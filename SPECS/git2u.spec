@@ -72,6 +72,10 @@ Patch0:         git-1.8-gitweb-home-link.patch
 Patch1:         git-cvsimport-Ignore-cvsps-2.2b1-Branches-output.patch
 # https://bugzilla.redhat.com/600411
 Patch3:         git-1.7-el5-emacs-support.patch
+# https://bugzilla.redhat.com/show_bug.cgi?id=1204193
+# http://thread.gmane.org/gmane.comp.version-control.git/266145
+# could be removed when update/branch of Michael will be merged in upstream
+Patch4:         git-infinite-loop.patch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -370,6 +374,7 @@ Obsoletes:      emacs-git-el%{?ius_suffix} <= 2.1.3-2.ius
 %if %{emacs_old}
 %patch3 -p1
 %endif
+%patch4 -p1
 
 %if %{use_prebuilt_docs}
 mkdir -p prebuilt_docs/{html,man}
@@ -703,6 +708,7 @@ rm -rf %{buildroot}
 
 %changelog
 - Use correct bash completion directory
+- Import Fedora patch to fix infinite loop rhbz#1204193
 
 * Mon Sep 14 2015 Carl George <carl.george@rackspace.com> - 2.5.2-1.ius
 - Latest upstream
