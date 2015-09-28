@@ -191,6 +191,7 @@ Provides:       git-daemon = %{version}-%{release}
 Provides:       git-daemon%{?_isa} = %{version}-%{release}
 Provides:       config(git-daemon) = %{version}-%{release}
 Conflicts:      git-daemon < %{version}
+
 %description daemon
 The git dæmon for supporting git:// access to git repositories
 
@@ -204,7 +205,6 @@ Requires:       git = %{version}-%{release}
 Provides:       gitweb = %{version}-%{release}
 Provides:       config(gitweb) = %{version}-%{release}
 Conflicts:      gitweb < %{version}
-
 
 %description -n gitweb%{?ius_suffix}
 Simple web interface to track changes in git repositories
@@ -235,6 +235,7 @@ BuildRequires:  python
 Requires:       git = %{version}-%{release}
 Provides:       git-p4 = %{version}-%{release}
 Conflicts:      git-p4 < %{version}
+
 %description p4
 %{summary}.
 
@@ -262,6 +263,7 @@ Requires:       cvsps
 Requires:	perl-DBD-SQLite
 Provides:       git-cvs = %{version}-%{release}
 Conflicts:      git-cvs < %{version}
+
 %description cvs
 Git tools for importing CVS repositories.
 
@@ -276,6 +278,7 @@ Requires:       perl(Authen::SASL)
 Requires:       perl(Net::SMTP::SSL)
 Provides:       git-email = %{version}-%{release}
 Conflicts:      git-email < %{version}
+
 %description email
 Git tools for sending email.
 
@@ -289,6 +292,7 @@ Requires:       git = %{version}-%{release}, tk >= 8.4
 Requires:       gitk = %{version}-%{release}
 Provides:       git-gui = %{version}-%{release}
 Conflicts:      git-gui < %{version}
+
 %description gui
 Git GUI tool.
 
@@ -301,6 +305,7 @@ BuildArch:      noarch
 Requires:       git = %{version}-%{release}, tk >= 8.4
 Provides:       gitk = %{version}-%{release}
 Conflicts:      gitk < %{version}
+
 %description -n gitk%{?ius_suffix}
 Git revision tree visualiser.
 
