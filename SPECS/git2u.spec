@@ -150,7 +150,7 @@ Requires:       perl-Git = %{version}-%{release}
 Requires:       perl(Term::ReadKey)
 %endif
 Requires:       emacs-git = %{version}-%{release}
-Conflicts:      %{real_name} < %{version}
+Conflicts:      git-all < %{version}
 Provides:       git-all = %{version}-%{release} 
 #Obsoletes:      git <= 1.5.4.3
 
