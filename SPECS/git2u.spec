@@ -46,6 +46,7 @@
 %global _bashcompdir %{_sysconfdir}/bash_completion.d
 %endif
 
+%global with_bzr            1
 
 %global real_name git
 %global ius_suffix 2u
@@ -161,6 +162,7 @@ and full access to internals.
 
 This is a dummy package which brings in all subpackages.
 
+%if 0%{?with_bzr}
 %package bzr
 Summary:        Git tools for working with bzr repositories
 Group:          Development/Tools
@@ -174,6 +176,7 @@ Conflicts:      git-bzr < %{version}
 
 %description bzr
 %{summary}.
+%endif # with_bzr
 
 %package daemon
 Summary:        Git protocol dæmon
@@ -539,7 +542,9 @@ perl -p \
 %endif
 
 # Install bzr and hg remote helpers from contrib
+%if 0%{?with_bzr}
 install -pm 755 contrib/remote-helpers/git-remote-bzr %{buildroot}%{gitcoredir}
+%endif # with_bzr
 %if 0%{?with_hg}
 install -pm 755 contrib/remote-helpers/git-remote-hg %{buildroot}%{gitcoredir}
 %endif # with_hg
@@ -607,9 +612,11 @@ rm -rf %{buildroot}
 %{!?_without_docs: %doc Documentation/howto Documentation/technical}
 %{_bashcompdir}
 
+%if 0%{?with_bzr}
 %files bzr
 %defattr(-,root,root)
 %{gitcoredir}/git-remote-bzr
+%endif # with_bzr
 
 %if 0%{?with_hg}
 %files hg
