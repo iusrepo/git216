@@ -36,12 +36,14 @@
 %global use_new_rpm_filters 1
 %global use_systemd         1
 %global with_hg             1
+%global _bashcompdir %{_datadir}/bash-completion/completions
 %else
 %global desktop_vendor_tag  1
 %global gnome_keyring       0
 %global use_new_rpm_filters 0
 %global use_systemd         0
 %global with_hg             0
+%global _bashcompdir %{_sysconfdir}/bash_completion.d
 %endif
 
 
@@ -533,8 +535,8 @@ install -pm 755 contrib/remote-helpers/git-remote-hg %{buildroot}%{gitcoredir}
 %endif # with_hg
 
 # Setup bash completion
-mkdir -p %{buildroot}%{_sysconfdir}/bash_completion.d
-install -pm 644 contrib/completion/git-completion.bash %{buildroot}%{_sysconfdir}/bash_completion.d/git
+install -Dpm 644 contrib/completion/git-completion.bash %{buildroot}%{_bashcompdir}/git
+ln -s git %{buildroot}%{_bashcompdir}/gitk
 
 # Install tcsh completion
 mkdir -p %{buildroot}%{_datadir}/git-core/contrib/completion
@@ -593,7 +595,7 @@ rm -rf %{buildroot}
 %doc README COPYING Documentation/*.txt Documentation/RelNotes contrib/
 %{!?_without_docs: %doc Documentation/*.html Documentation/docbook-xsl.css}
 %{!?_without_docs: %doc Documentation/howto Documentation/technical}
-%{_sysconfdir}/bash_completion.d
+%{_bashcompdir}
 
 %files bzr
 %defattr(-,root,root)
@@ -700,6 +702,8 @@ rm -rf %{buildroot}
 # No files for you!
 
 %changelog
+- Use correct bash completion directory
+
 * Mon Sep 14 2015 Carl George <carl.george@rackspace.com> - 2.5.2-1.ius
 - Latest upstream
 
