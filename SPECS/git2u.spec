@@ -118,10 +118,10 @@ Provides:       git-core = %{version}-%{release}
 # Obsolete git-arch
 #Obsoletes:      git-arch < %{version}-%{release}
 
-Provides:       git-core = %{version}-%{release}
-Provides:       git-core%{?ius_suffix} = %{version}-%{release}
-Provides:       git = %{version}-%{release}
-Provides:       git-%{?_isa} = %{version}-%{release}
+Provides:       %{real_name}-core = %{version}-%{release}
+Provides:       %{real_name}-core%{?ius_suffix} = %{version}-%{release}
+Provides:       %{real_name} = %{version}-%{release}
+Provides:       %{real_name}%{?_isa} = %{version}-%{release}
 Conflicts:      %{real_name} < %{version}
 
 %description
