@@ -605,7 +605,6 @@ rm -rf %{buildroot}
 %endif
 
 %files -f bin-man-doc-files
-%defattr(-,root,root)
 %{_datadir}/git-core/
 %doc README COPYING Documentation/*.txt Documentation/RelNotes contrib/
 %{!?_without_docs: %doc Documentation/*.html Documentation/docbook-xsl.css}
@@ -614,18 +613,15 @@ rm -rf %{buildroot}
 
 %if 0%{?with_bzr}
 %files bzr
-%defattr(-,root,root)
 %{gitcoredir}/git-remote-bzr
 %endif # with_bzr
 
 %if 0%{?with_hg}
 %files hg
-%defattr(-,root,root)
 %{gitcoredir}/git-remote-hg
 %endif # with_hg
 
 %files p4
-%defattr(-,root,root)
 %{gitcoredir}/*p4*
 %{gitcoredir}/mergetools/p4merge
 %doc Documentation/*p4*.txt
@@ -633,14 +629,12 @@ rm -rf %{buildroot}
 %{!?_without_docs: %doc Documentation/*p4*.html }
 
 %files svn
-%defattr(-,root,root)
 %{gitcoredir}/*svn*
 %doc Documentation/*svn*.txt
 %{!?_without_docs: %{_mandir}/man1/*svn*.1*}
 %{!?_without_docs: %doc Documentation/*svn*.html }
 
 %files cvs
-%defattr(-,root,root)
 %doc Documentation/*git-cvs*.txt
 %{_bindir}/git-cvsserver
 %{gitcoredir}/*cvs*
@@ -648,14 +642,12 @@ rm -rf %{buildroot}
 %{!?_without_docs: %doc Documentation/*git-cvs*.html }
 
 %files email
-%defattr(-,root,root)
 %doc Documentation/*email*.txt
 %{gitcoredir}/*email*
 %{!?_without_docs: %{_mandir}/man1/*email*.1*}
 %{!?_without_docs: %doc Documentation/*email*.html }
 
 %files gui
-%defattr(-,root,root)
 %{gitcoredir}/git-gui*
 %{gitcoredir}/git-citool
 %{_datadir}/applications/*git-gui.desktop
@@ -666,7 +658,6 @@ rm -rf %{buildroot}
 %{!?_without_docs: %doc Documentation/git-citool.html}
 
 %files -n gitk%{?ius_suffix}
-%defattr(-,root,root)
 %doc Documentation/*gitk*.txt
 %{_bindir}/*gitk*
 %{_datadir}/gitk
@@ -674,27 +665,22 @@ rm -rf %{buildroot}
 %{!?_without_docs: %doc Documentation/*gitk*.html }
 
 %files -n perl-Git%{?ius_suffix} -f perl-git-files
-%defattr(-,root,root)
 %exclude %{_mandir}/man3/*Git*SVN*.3pm*
 %{!?_without_docs: %{_mandir}/man3/*Git*.3pm*}
 
 %files -n perl-Git%{?ius_suffix}-SVN -f perl-git-svn-files
-%defattr(-,root,root)
 %{!?_without_docs: %{_mandir}/man3/*Git*SVN*.3pm*}
 
 %files -n emacs-git%{?ius_suffix}
-%defattr(-,root,root)
 %doc contrib/emacs/README
 %dir %{elispdir}
 %{elispdir}/*.elc
 %{_emacs_sitestartdir}/git-init.el
 
 %files -n emacs-git%{?ius_suffix}-el
-%defattr(-,root,root)
 %{elispdir}/*.el
 
 %files daemon
-%defattr(-,root,root)
 %doc Documentation/*daemon*.txt
 %if %{use_systemd}
 %{_unitdir}/git.socket
@@ -708,7 +694,6 @@ rm -rf %{buildroot}
 %{!?_without_docs: %doc Documentation/*daemon*.html}
 
 %files -n gitweb%{?ius_suffix}
-%defattr(-,root,root)
 %doc gitweb/INSTALL gitweb/README
 %config(noreplace)%{_sysconfdir}/gitweb.conf
 %config(noreplace)%{_sysconfdir}/httpd/conf.d/git.conf
