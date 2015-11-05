@@ -139,18 +139,18 @@ Group:          Development/Tools
 %if %{noarch_sub}
 BuildArch:      noarch
 %endif
-Requires:       git = %{version}-%{release}
-Requires:       git-cvs = %{version}-%{release}
-Requires:       git-email = %{version}-%{release}
-Requires:       git-gui = %{version}-%{release}
-Requires:       git-svn = %{version}-%{release}
-Requires:       git-p4 = %{version}-%{release}
-Requires:       gitk = %{version}-%{release}
-Requires:       perl-Git = %{version}-%{release}
+Requires:       git%{?ius_suffix} = %{version}-%{release}
+Requires:       git%{?ius_suffix}-cvs = %{version}-%{release}
+Requires:       git%{?ius_suffix}-email = %{version}-%{release}
+Requires:       git%{?ius_suffix}-gui = %{version}-%{release}
+Requires:       git%{?ius_suffix}-svn = %{version}-%{release}
+Requires:       git%{?ius_suffix}-p4 = %{version}-%{release}
+Requires:       gitk%{?ius_suffix} = %{version}-%{release}
+Requires:       perl-Git%{?ius_suffix} = %{version}-%{release}
 %if ! %{defined perl_bootstrap}
 Requires:       perl(Term::ReadKey)
 %endif
-Requires:       emacs-git = %{version}-%{release}
+Requires:       emacs-git%{?ius_suffix} = %{version}-%{release}
 Conflicts:      git-all < %{version}
 Provides:       git-all = %{version}-%{release} 
 #Obsoletes:      git <= 1.5.4.3
@@ -169,7 +169,7 @@ Group:          Development/Tools
 %if %{noarch_sub}
 BuildArch:      noarch
 %endif
-Requires:       git = %{version}-%{release}
+Requires:       git%{?ius_suffix} = %{version}-%{release}
 Requires:       bzr
 Provides:       git-bzr = %{version}-%{release}
 Conflicts:      git-bzr < %{version}
@@ -181,7 +181,7 @@ Conflicts:      git-bzr < %{version}
 %package daemon
 Summary:        Git protocol dæmon
 Group:          Development/Tools
-Requires:       git = %{version}-%{release}
+Requires:       git%{?ius_suffix} = %{version}-%{release}
 %if %{use_systemd}
 Requires:	systemd
 Requires(post): systemd
@@ -204,7 +204,7 @@ Group:          Development/Tools
 %if %{noarch_sub}
 BuildArch:      noarch
 %endif
-Requires:       git = %{version}-%{release}
+Requires:       git%{?ius_suffix} = %{version}-%{release}
 Provides:       gitweb = %{version}-%{release}
 Provides:       config(gitweb) = %{version}-%{release}
 Conflicts:      gitweb < %{version}
@@ -219,7 +219,7 @@ Group:          Development/Tools
 %if %{noarch_sub}
 BuildArch:      noarch
 %endif
-Requires:       git = %{version}-%{release}
+Requires:       git%{?ius_suffix} = %{version}-%{release}
 Requires:       mercurial >= 1.8
 Provides:       git-hg = %{version}-%{release}
 Conflicts:      git-hg < %{version}
@@ -235,7 +235,7 @@ Group:          Development/Tools
 BuildArch:      noarch
 %endif
 BuildRequires:  python
-Requires:       git = %{version}-%{release}
+Requires:       git%{?ius_suffix} = %{version}-%{release}
 Provides:       git-p4 = %{version}-%{release}
 Conflicts:      git-p4 < %{version}
 
@@ -245,7 +245,7 @@ Conflicts:      git-p4 < %{version}
 %package svn
 Summary:        Git tools for importing Subversion repositories
 Group:          Development/Tools
-Requires:       git = %{version}-%{release}, subversion
+Requires:       git%{?ius_suffix} = %{version}-%{release}, subversion
 %if ! %{defined perl_bootstrap}
 Requires:       perl(Term::ReadKey)
 %endif
@@ -261,7 +261,7 @@ Group:          Development/Tools
 %if %{noarch_sub}
 BuildArch:      noarch
 %endif
-Requires:       git = %{version}-%{release}, cvs
+Requires:       git%{?ius_suffix} = %{version}-%{release}, cvs
 Requires:       cvsps
 Requires:	perl-DBD-SQLite
 Provides:       git-cvs = %{version}-%{release}
@@ -276,7 +276,8 @@ Group:          Development/Tools
 %if %{noarch_sub}
 BuildArch:      noarch
 %endif
-Requires:       git = %{version}-%{release}, perl-Git = %{version}-%{release}
+Requires:       git%{?ius_suffix} = %{version}-%{release}
+Requires:       perl-Git%{?ius_suffix} = %{version}-%{release}
 Requires:       perl(Authen::SASL)
 Requires:       perl(Net::SMTP::SSL)
 Provides:       git-email = %{version}-%{release}
@@ -291,8 +292,8 @@ Group:          Development/Tools
 %if %{noarch_sub}
 BuildArch:      noarch
 %endif
-Requires:       git = %{version}-%{release}, tk >= 8.4
-Requires:       gitk = %{version}-%{release}
+Requires:       git%{?ius_suffix} = %{version}-%{release}, tk >= 8.4
+Requires:       gitk%{?ius_suffix} = %{version}-%{release}
 Provides:       git-gui = %{version}-%{release}
 Conflicts:      git-gui < %{version}
 
@@ -305,7 +306,7 @@ Group:          Development/Tools
 %if %{noarch_sub}
 BuildArch:      noarch
 %endif
-Requires:       git = %{version}-%{release}, tk >= 8.4
+Requires:       git%{?ius_suffix} = %{version}-%{release}, tk >= 8.4
 Provides:       gitk = %{version}-%{release}
 Conflicts:      gitk < %{version}
 
@@ -318,7 +319,7 @@ Group:          Development/Libraries
 %if %{noarch_sub}
 BuildArch:      noarch
 %endif
-Requires:       git = %{version}-%{release}
+Requires:       git%{?ius_suffix} = %{version}-%{release}
 BuildRequires:  perl(Error), perl(ExtUtils::MakeMaker)
 Requires:       perl(Error)
 Requires:       perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
@@ -334,7 +335,7 @@ Group:          Development/Libraries
 %if %{noarch_sub}
 BuildArch:      noarch
 %endif
-Requires:       git = %{version}-%{release}
+Requires:       git%{?ius_suffix} = %{version}-%{release}
 Requires:       perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
 Provides:       perl-Git-SVN = %{version}-%{release}
 Conflicts:      perl-Git-SVN < %{version}
@@ -347,7 +348,7 @@ Perl interface to Git.
 %package -n emacs-git%{?ius_suffix}
 Summary:        Git version control system support for Emacs
 Group:          Applications/Editors
-Requires:       git = %{version}-%{release}
+Requires:       git%{?ius_suffix} = %{version}-%{release}
 %if %{noarch_sub}
 BuildArch:      noarch
 Requires:       emacs(bin) >= %{_emacs_version}
@@ -366,7 +367,7 @@ Group:          Applications/Editors
 %if %{noarch_sub}
 BuildArch:      noarch
 %endif
-Requires:       emacs-git = %{version}-%{release}
+Requires:       emacs-git%{?ius_suffix} = %{version}-%{release}
 Provides:       emacs-git-el = %{version}-%{release}
 Conflicts:      emacs-git-el < %{version}
 Provides:       emacs-git-el%{?ius_suffix} = %{version}-%{release}
