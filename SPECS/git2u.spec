@@ -106,7 +106,7 @@ Requires:       perl(Error)
 %if ! %{defined perl_bootstrap}
 Requires:       perl(Term::ReadKey)
 %endif
-Requires:       perl-Git = %{version}-%{release}
+Requires:       perl-Git%{?ius_suffix} = %{version}-%{release}
 Requires:       rsync
 Requires:       zlib >= 1.2
 
@@ -118,7 +118,7 @@ Requires:       zlib >= 1.2
 #Obsoletes:      git-arch < %{version}-%{release}
 
 Provides:       %{real_name}-core = %{version}-%{release}
-Provides:       %{real_name}-core%{?ius_suffix} = %{version}-%{release}
+Provides:       %{real_name}%{?ius_suffix}-core = %{version}-%{release}
 Provides:       %{real_name} = %{version}-%{release}
 Provides:       %{real_name}%{?_isa} = %{version}-%{release}
 Conflicts:      %{real_name} < %{version}
