@@ -245,6 +245,7 @@ Conflicts:      git-p4 < %{version}
 Summary:        Git tools for importing Subversion repositories
 Group:          Development/Tools
 Requires:       git%{?ius_suffix} = %{version}-%{release}, subversion
+Requires:       perl(Digest::MD5)
 %if ! %{defined perl_bootstrap}
 Requires:       perl(Term::ReadKey)
 %endif
@@ -706,6 +707,7 @@ rm -rf %{buildroot}
 %changelog
 * Thu Nov 05 2015 Carl George <carl.george@rackspace.com> - 2.6.2-1.ius
 - Latest upstream
+- git-svn requires perl-Digest-MD5 (#1218176) (Fedora)
 
 * Mon Oct 12 2015 Ben Harper <ben.harper@rackspace.com> -  2.6.1-1.ius
 - Latest upstream
