@@ -110,7 +110,6 @@ Requires:       perl-Git = %{version}-%{release}
 Requires:       rsync
 Requires:       zlib >= 1.2
 
-Provides:       git-core = %{version}-%{release}
 #%if 0%{?rhel} && 0%{?rhel} <= 5
 #Obsoletes:      git-core <= 1.5.4.3
 #%endif
