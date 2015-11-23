@@ -52,7 +52,7 @@
 %global ius_suffix 2u
 
 Name:           %{real_name}%{?ius_suffix}
-Version:        2.6.2
+Version:        2.6.3
 Release:        1.ius%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
@@ -705,6 +705,9 @@ rm -rf %{buildroot}
 # No files for you!
 
 %changelog
+* Mon Nov 23 2015 Carl George <carl.george@rackspace.com> - 2.6.3-1.ius
+- Latest upstream
+
 * Thu Nov 05 2015 Carl George <carl.george@rackspace.com> - 2.6.2-1.ius
 - Latest upstream
 - git-svn requires perl-Digest-MD5 (#1218176) (Fedora)
