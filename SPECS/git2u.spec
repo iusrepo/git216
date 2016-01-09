@@ -140,7 +140,7 @@ Requires:       git%{?ius_suffix}-email = %{version}-%{release}
 Requires:       git%{?ius_suffix}-gui = %{version}-%{release}
 Requires:       git%{?ius_suffix}-svn = %{version}-%{release}
 Requires:       git%{?ius_suffix}-p4 = %{version}-%{release}
-Requires:       gitk%{?ius_suffix} = %{version}-%{release}
+Requires:       git%{?ius_suffix}-gitk = %{version}-%{release}
 Requires:       perl-Git%{?ius_suffix} = %{version}-%{release}
 %if ! %{defined perl_bootstrap}
 Requires:       perl(Term::ReadKey)
@@ -291,14 +291,14 @@ Group:          Development/Tools
 BuildArch:      noarch
 %endif
 Requires:       git%{?ius_suffix} = %{version}-%{release}, tk >= 8.4
-Requires:       gitk%{?ius_suffix} = %{version}-%{release}
+Requires:       git%{?ius_suffix}-gitk = %{version}-%{release}
 Provides:       git-gui = %{version}-%{release}
 Conflicts:      git-gui < %{version}
 
 %description gui
 Git GUI tool.
 
-%package -n gitk%{?ius_suffix}
+%package gitk
 Summary:        Git revision tree visualiser
 Group:          Development/Tools
 %if %{noarch_sub}
@@ -307,8 +307,11 @@ BuildArch:      noarch
 Requires:       git%{?ius_suffix} = %{version}-%{release}, tk >= 8.4
 Provides:       gitk = %{version}-%{release}
 Conflicts:      gitk < %{version}
+# rename from gitk2u to git2u-gitk
+Provides:       gitk%{?ius_suffix} = %{version}-%{release}
+Obsoletes:      gitk%{?ius_suffix} <= 2.6.4-2.ius
 
-%description -n gitk%{?ius_suffix}
+%description gitk
 Git revision tree visualiser.
 
 %package -n perl-Git%{?ius_suffix}
@@ -658,7 +661,7 @@ rm -rf %{buildroot}
 %{!?_without_docs: %{_mandir}/man1/git-citool.1*}
 %{!?_without_docs: %doc Documentation/git-citool.html}
 
-%files -n gitk%{?ius_suffix}
+%files gitk
 %doc Documentation/*gitk*.txt
 %{_bindir}/*gitk*
 %{_datadir}/gitk
@@ -711,6 +714,7 @@ rm -rf %{buildroot}
 - Remove hg/bzr subpackages; corresponding scripts removed from upstream source
 - Create git-core and git-core-doc subpackages (following Fedora)
 - Rename gitweb2u to git2u-gitweb
+- Rename gitk2u to git2u-gitk
 
 * Wed Dec 09 2015 Ben Harper <ben.harper@rackspace.com> - 2.6.4-1.ius
 - Latest upstream
