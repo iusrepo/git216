@@ -35,18 +35,15 @@
 %global gnome_keyring       1
 %global use_new_rpm_filters 1
 %global use_systemd         1
-%global with_hg             1
 %global _bashcompdir %{_datadir}/bash-completion/completions
 %else
 %global desktop_vendor_tag  1
 %global gnome_keyring       0
 %global use_new_rpm_filters 0
 %global use_systemd         0
-%global with_hg             0
 %global _bashcompdir %{_sysconfdir}/bash_completion.d
 %endif
 
-%global with_bzr            1
 
 %global real_name git
 %global ius_suffix 2u
@@ -123,6 +120,16 @@ Provides:       %{real_name} = %{version}-%{release}
 Provides:       %{real_name}%{?_isa} = %{version}-%{release}
 Conflicts:      %{real_name} < %{version}
 
+# The bzr and hg remote helper scripts have been effectively removed from the
+# upstream source and are now maintained independently.
+#
+# https://github.com/git/git/blob/v2.7.0/contrib/remote-helpers/git-remote-bzr
+# https://github.com/git/git/blob/v2.7.0/contrib/remote-helpers/git-remote-hg
+#
+# Obsolete them here to provide a clean upgrade path.
+Obsoletes:      git%{?ius_suffix}-bzr <= 2.6.4-2.ius
+Obsoletes:      git%{?ius_suffix}-hg <= 2.6.4-2.ius
+
 %description
 Git is a fast, scalable, distributed revision control system with an
 unusually rich command set that provides both high-level operations
@@ -161,22 +168,6 @@ and full access to internals.
 
 This is a dummy package which brings in all subpackages.
 
-%if 0%{?with_bzr}
-%package bzr
-Summary:        Git tools for working with bzr repositories
-Group:          Development/Tools
-%if %{noarch_sub}
-BuildArch:      noarch
-%endif
-Requires:       git%{?ius_suffix} = %{version}-%{release}
-Requires:       bzr
-Provides:       git-bzr = %{version}-%{release}
-Conflicts:      git-bzr < %{version}
-
-%description bzr
-%{summary}.
-%endif # with_bzr
-
 %package daemon
 Summary:        Git protocol dæmon
 Group:          Development/Tools
@@ -210,22 +201,6 @@ Conflicts:      gitweb < %{version}
 
 %description -n gitweb%{?ius_suffix}
 Simple web interface to track changes in git repositories
-
-%if 0%{?with_hg}
-%package hg
-Summary:        Git tools for working with mercurial repositories
-Group:          Development/Tools
-%if %{noarch_sub}
-BuildArch:      noarch
-%endif
-Requires:       git%{?ius_suffix} = %{version}-%{release}
-Requires:       mercurial >= 1.8
-Provides:       git-hg = %{version}-%{release}
-Conflicts:      git-hg < %{version}
-
-%description hg
-%{summary}.
-%endif # with_hg
 
 %package p4
 Summary:        Git tools for working with Perforce depots
@@ -542,14 +517,6 @@ perl -p \
     %{SOURCE3} > %{buildroot}%{_sysconfdir}/xinetd.d/git
 %endif
 
-# Install bzr and hg remote helpers from contrib
-%if 0%{?with_bzr}
-install -pm 755 contrib/remote-helpers/git-remote-bzr %{buildroot}%{gitcoredir}
-%endif # with_bzr
-%if 0%{?with_hg}
-install -pm 755 contrib/remote-helpers/git-remote-hg %{buildroot}%{gitcoredir}
-%endif # with_hg
-
 # Setup bash completion
 install -Dpm 644 contrib/completion/git-completion.bash %{buildroot}%{_bashcompdir}/git
 ln -s git %{buildroot}%{_bashcompdir}/gitk
@@ -612,15 +579,6 @@ rm -rf %{buildroot}
 %{!?_without_docs: %doc Documentation/howto Documentation/technical}
 %{_bashcompdir}
 
-%if 0%{?with_bzr}
-%files bzr
-%{gitcoredir}/git-remote-bzr
-%endif # with_bzr
-
-%if 0%{?with_hg}
-%files hg
-%{gitcoredir}/git-remote-hg
-%endif # with_hg
 
 %files p4
 %{gitcoredir}/*p4*
@@ -708,6 +666,7 @@ rm -rf %{buildroot}
 * Fri Jan 08 2016 Carl George <carl.george@rackspace.com> - 2.7.0-1.ius
 - Latest upstream
 - Patch4 (infinite loop) no longer needed
+- Remove hg/bzr subpackages; corresponding scripts removed from upstream source
 
 * Wed Dec 09 2015 Ben Harper <ben.harper@rackspace.com> - 2.6.4-1.ius
 - Latest upstream
