@@ -207,7 +207,7 @@ Conflicts:      git-daemon < %{version}
 %description daemon
 The git dæmon for supporting git:// access to git repositories
 
-%package -n gitweb%{?ius_suffix}
+%package gitweb
 Summary:        Simple web interface to git repositories
 Group:          Development/Tools
 %if %{noarch_sub}
@@ -217,8 +217,11 @@ Requires:       git%{?ius_suffix} = %{version}-%{release}
 Provides:       gitweb = %{version}-%{release}
 Provides:       config(gitweb) = %{version}-%{release}
 Conflicts:      gitweb < %{version}
+# rename from gitweb2u to git2u-gitweb
+Provides:       gitweb%{?ius_suffix} = %{version}-%{release}
+Obsoletes:      gitweb%{?ius_suffix} <= 2.6.4-2.ius
 
-%description -n gitweb%{?ius_suffix}
+%description gitweb
 Simple web interface to track changes in git repositories
 
 %package p4
@@ -691,7 +694,7 @@ rm -rf %{buildroot}
 %{!?_without_docs: %{_mandir}/man1/*daemon*.1*}
 %{!?_without_docs: %doc Documentation/*daemon*.html}
 
-%files -n gitweb%{?ius_suffix}
+%files gitweb
 %doc gitweb/INSTALL gitweb/README
 %config(noreplace)%{_sysconfdir}/gitweb.conf
 %config(noreplace)%{_sysconfdir}/httpd/conf.d/git.conf
@@ -707,6 +710,7 @@ rm -rf %{buildroot}
 - Patch4 (infinite loop) no longer needed
 - Remove hg/bzr subpackages; corresponding scripts removed from upstream source
 - Create git-core and git-core-doc subpackages (following Fedora)
+- Rename gitweb2u to git2u-gitweb
 
 * Wed Dec 09 2015 Ben Harper <ben.harper@rackspace.com> - 2.6.4-1.ius
 - Latest upstream
