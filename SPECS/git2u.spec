@@ -98,25 +98,14 @@ BuildRequires:  zlib-devel >= 1.2
 BuildRequires:  systemd
 %endif
 
-Requires:       less
-Requires:       openssh-clients
+Requires:       git%{?ius_suffix}-core = %{version}-%{release}
+Requires:       git%{?ius_suffix}-core-doc = %{version}-%{release}
 Requires:       perl(Error)
 %if ! %{defined perl_bootstrap}
 Requires:       perl(Term::ReadKey)
 %endif
 Requires:       perl-Git%{?ius_suffix} = %{version}-%{release}
-Requires:       rsync
-Requires:       zlib >= 1.2
 
-#%if 0%{?rhel} && 0%{?rhel} <= 5
-#Obsoletes:      git-core <= 1.5.4.3
-#%endif
-
-# Obsolete git-arch
-#Obsoletes:      git-arch < %{version}-%{release}
-
-Provides:       %{real_name}-core = %{version}-%{release}
-Provides:       %{real_name}%{?ius_suffix}-core = %{version}-%{release}
 Provides:       %{real_name} = %{version}-%{release}
 Provides:       %{real_name}%{?_isa} = %{version}-%{release}
 Conflicts:      %{real_name} < %{version}
@@ -136,9 +125,9 @@ Git is a fast, scalable, distributed revision control system with an
 unusually rich command set that provides both high-level operations
 and full access to internals.
 
-The git rpm installs the core tools with minimal dependencies.  To
-install all git packages, including tools for integrating with other
-SCMs, install the git-all meta-package.
+The git rpm installs common set of tools which are usually using with
+small amount of dependencies. To install all git packages, including
+tools for integrating with other SCMs, install the git-all meta-package.
 
 %package all
 Summary:        Meta-package to pull in all git tools
@@ -168,6 +157,36 @@ unusually rich command set that provides both high-level operations
 and full access to internals.
 
 This is a dummy package which brings in all subpackages.
+
+%package core
+Summary:        Core package of git with minimal funcionality
+Group:          Development/Tools
+Requires:       less
+Requires:       openssh-clients
+Requires:       rsync
+Requires:       zlib >= 1.2
+Provides:       git-core = %{version}-%{release}
+Conflicts:      git-core < %{version}
+
+%description core
+Git is a fast, scalable, distributed revision control system with an
+unusually rich command set that provides both high-level operations
+and full access to internals.
+
+The git-core rpm installs really the core tools with minimal
+dependencies. Install git package for common set of tools.
+To install all git packages, including tools for integrating with
+other SCMs, install the git-all meta-package.
+
+%package core-doc
+Summary:        Documentation files for git-core
+Group:          Development/Tools
+Requires:       git%{?ius_suffix}-core = %{version}-%{release}
+Provides:       git-core-doc = %{version}-%{release}
+Conflicts:      git-core-doc < %{version}
+
+%description core-doc
+Documentation files for git-core package including man pages.
 
 %package daemon
 Summary:        Git protocol dæmon
@@ -474,6 +493,9 @@ make -C contrib/subtree install
 %if ! %{use_prebuilt_docs}
 make -C contrib/subtree install-doc
 %endif
+# it's ugly hack, but this file don't need to be copied to this directory
+# it's already part of git-core-doc and it's alone here
+rm -f %{buildroot}%{_pkgdocdir}/git-subtree.html
 
 mkdir -p %{buildroot}%{_sysconfdir}/httpd/conf.d
 install -pm 0644 %{SOURCE4} %{buildroot}%{_sysconfdir}/httpd/conf.d/git.conf
@@ -559,6 +581,11 @@ rm -f {Documentation/technical,contrib/emacs,contrib/credential/gnome-keyring}/.
 chmod a-x Documentation/technical/api-index.sh
 find contrib -type f | xargs chmod -x
 
+# Split core files
+not_core_re="git-(add--interactive|am|difftool|instaweb|relink|request-pull|send-mail|submodule)|gitweb|prepare-commit-msg|pre-rebase"
+grep -vE "$not_core_re|\/man\/" bin-man-doc-files > bin-files-core
+grep -vE "$not_core_re" bin-man-doc-files | grep "\/man\/" > man-doc-files-core
+grep -E "$not_core_re" bin-man-doc-files > bin-man-doc-git-files
 
 %clean
 rm -rf %{buildroot}
@@ -574,13 +601,24 @@ rm -rf %{buildroot}
 %systemd_postun_with_restart git@.service
 %endif
 
-%files -f bin-man-doc-files
+%files -f bin-man-doc-git-files
+%{_datadir}/git-core/contrib/hooks/update-paranoid
+%{_datadir}/git-core/contrib/hooks/setgitperms.perl
+
+%files core -f bin-files-core
+%{!?_licensedir:%global license %%doc}
+%license COPYING
+# exlude is best way here because of troubles with symlinks inside git-core/
+%exclude %{_datadir}/git-core/contrib/hooks/update-paranoid
+%exclude %{_datadir}/git-core/contrib/hooks/setgitperms.perl
 %{_datadir}/git-core/
-%doc README COPYING Documentation/*.txt Documentation/RelNotes contrib/
-%{!?_without_docs: %doc Documentation/*.html Documentation/docbook-xsl.css}
-%{!?_without_docs: %doc Documentation/howto Documentation/technical}
 %{_bashcompdir}
 
+%files core-doc -f man-doc-files-core
+%doc README Documentation/*.txt Documentation/RelNotes contrib/
+%{!?_without_docs: %doc Documentation/*.html Documentation/docbook-xsl.css}
+%{!?_without_docs: %doc Documentation/howto Documentation/technical}
+%{!?_without_docs: %doc contrib/subtree/git-subtree.html Documentation/docbook-xsl.css}
 
 %files p4
 %{gitcoredir}/*p4*
@@ -669,6 +707,7 @@ rm -rf %{buildroot}
 - Latest upstream
 - Patch4 (infinite loop) no longer needed
 - Remove hg/bzr subpackages; corresponding scripts removed from upstream source
+- Create git-core and git-core-doc subpackages (following Fedora)
 
 * Wed Dec 09 2015 Ben Harper <ben.harper@rackspace.com> - 2.6.4-1.ius
 - Latest upstream
