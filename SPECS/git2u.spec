@@ -46,24 +46,23 @@
 
 %{!?_pkgdocdir: %global _pkgdocdir %{_docdir}/%{name}-%{version}}
 
-%global real_name git
 %global ius_suffix 2u
 
-Name:           %{real_name}%{?ius_suffix}
+Name:           git%{?ius_suffix}
 Version:        2.7.0
 Release:        1.ius%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
 Group:          Development/Tools
 URL:            http://git-scm.com/
-Source0:        http://www.kernel.org/pub/software/scm/git/%{real_name}-%{version}.tar.gz
+Source0:        http://www.kernel.org/pub/software/scm/git/git-%{version}.tar.gz
 Source2:        git-init.el
 Source3:        git.xinetd.in
 Source4:        git.conf.httpd
 Source5:        git-gui.desktop
 Source6:        gitweb.conf.in
-Source10:       http://www.kernel.org/pub/software/scm/git/%{real_name}-manpages-%{version}.tar.gz
-Source11:       http://www.kernel.org/pub/software/scm/git/%{real_name}-htmldocs-%{version}.tar.gz
+Source10:       http://www.kernel.org/pub/software/scm/git/git-manpages-%{version}.tar.gz
+Source11:       http://www.kernel.org/pub/software/scm/git/git-htmldocs-%{version}.tar.gz
 Source12:       git@.service
 Source13:       git.socket
 Patch0:         git-1.8-gitweb-home-link.patch
@@ -106,9 +105,9 @@ Requires:       perl(Term::ReadKey)
 %endif
 Requires:       perl-Git%{?ius_suffix} = %{version}-%{release}
 
-Provides:       %{real_name} = %{version}-%{release}
-Provides:       %{real_name}%{?_isa} = %{version}-%{release}
-Conflicts:      %{real_name} < %{version}
+Provides:       git = %{version}-%{release}
+Provides:       git%{?_isa} = %{version}-%{release}
+Conflicts:      git < %{version}
 
 # The bzr and hg remote helper scripts have been effectively removed from the
 # upstream source and are now maintained independently.
@@ -373,7 +372,7 @@ Obsoletes:      emacs-git-el%{?ius_suffix} <= 2.1.3-2.ius
 %{summary}.
 
 %prep
-%setup -q -n %{real_name}-%{version}
+%setup -q -n git-%{version}
 %patch0 -p1
 %patch1 -p1
 %if %{emacs_old}
@@ -437,7 +436,7 @@ sed \
     -e '/perl(packed-refs)/d'
 EOF
 
-%global __perl_requires %{_builddir}/%{real_name}-%{version}/%{name}-req
+%global __perl_requires %{_builddir}/git-%{version}/%{name}-req
 chmod +x %{__perl_requires}
 %endif
 
@@ -571,8 +570,8 @@ desktop-file-install \
   --dir=%{buildroot}%{_datadir}/applications %{SOURCE5}
 
 # find translations
-%find_lang %{real_name} %{real_name}.lang
-cat %{real_name}.lang >> bin-man-doc-files
+%find_lang git git.lang
+cat git.lang >> bin-man-doc-files
 
 # quiet some rpmlint complaints
 chmod -R g-w %{buildroot}
