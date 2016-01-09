@@ -44,6 +44,7 @@
 %global _bashcompdir %{_sysconfdir}/bash_completion.d
 %endif
 
+%{!?_pkgdocdir: %global _pkgdocdir %{_docdir}/%{name}-%{version}}
 
 %global real_name git
 %global ius_suffix 2u
@@ -383,7 +384,7 @@ DESTDIR = %{buildroot}
 INSTALL = install -p
 GITWEB_PROJECTROOT = %{_var}/lib/git
 GNU_ROFF = 1
-htmldir = %{?_pkgdocdir}%{!?_pkgdocdir:%{_docdir}/%{name}-%{version}}
+htmldir = %{_pkgdocdir}
 prefix = %{_prefix}
 gitwebdir = %{_var}/www/git
 EOF
