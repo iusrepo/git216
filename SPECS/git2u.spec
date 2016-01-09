@@ -173,7 +173,7 @@ Summary:        Git protocol dæmon
 Group:          Development/Tools
 Requires:       git%{?ius_suffix} = %{version}-%{release}
 %if %{use_systemd}
-Requires:	systemd
+Requires:       systemd
 Requires(post): systemd
 Requires(preun): systemd
 Requires(postun): systemd
@@ -227,6 +227,7 @@ Requires:       perl(Term::ReadKey)
 Provides:       git-svn = %{version}-%{release}
 Provides:       git-svn%{?_isa} = %{version}-%{release}
 Conflicts:      git-svn < %{version}
+
 %description svn
 Git tools for importing Subversion repositories.
 
@@ -238,7 +239,7 @@ BuildArch:      noarch
 %endif
 Requires:       git%{?ius_suffix} = %{version}-%{release}, cvs
 Requires:       cvsps
-Requires:	perl-DBD-SQLite
+Requires:       perl-DBD-SQLite
 Provides:       git-cvs = %{version}-%{release}
 Conflicts:      git-cvs < %{version}
 
