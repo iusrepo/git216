@@ -333,7 +333,7 @@ Obsoletes:      perl-Git%{?ius_suffix} <= 2.6.4-2.ius
 %description perl-Git
 Perl interface to Git.
 
-%package -n perl-Git%{?ius_suffix}-SVN
+%package perl-Git-SVN
 Summary:        Perl interface to Git::SVN
 Group:          Development/Libraries
 %if %{noarch_sub}
@@ -343,10 +343,14 @@ Requires:       git%{?ius_suffix} = %{version}-%{release}
 Requires:       perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
 Provides:       perl-Git-SVN = %{version}-%{release}
 Conflicts:      perl-Git-SVN < %{version}
+# rename from perl-Git-SVN2u to perl-Git2u-SVN
 Provides:       perl-Git-SVN%{?ius_suffix} = %{version}-%{release}
 Obsoletes:      perl-Git-SVN%{?ius_suffix} <= 2.1.3-2.ius
+# rename from perl-Git2u-SVN to git2u-perl-Git-SVN
+Provides:       perl-Git%{?ius_suffix}-SVN = %{version}-%{release}
+Obsoletes:      perl-Git%{?ius_suffix}-SVN <= 2.6.4-2.ius
 
-%description -n perl-Git%{?ius_suffix}-SVN
+%description perl-Git-SVN
 Perl interface to Git.
 
 %package -n emacs-git%{?ius_suffix}
@@ -675,7 +679,7 @@ rm -rf %{buildroot}
 %exclude %{_mandir}/man3/*Git*SVN*.3pm*
 %{!?_without_docs: %{_mandir}/man3/*Git*.3pm*}
 
-%files -n perl-Git%{?ius_suffix}-SVN -f perl-git-svn-files
+%files perl-Git-SVN -f perl-git-svn-files
 %{!?_without_docs: %{_mandir}/man3/*Git*SVN*.3pm*}
 
 %files -n emacs-git%{?ius_suffix}
@@ -719,6 +723,7 @@ rm -rf %{buildroot}
 - Rename gitweb2u to git2u-gitweb
 - Rename gitk2u to git2u-gitk
 - Rename perl-Git2u to git2u-perl-Git
+- Rename perl-Git2u-SVN to git2u-perl-Git-SVN
 
 * Wed Dec 09 2015 Ben Harper <ben.harper@rackspace.com> - 2.6.4-1.ius
 - Latest upstream
