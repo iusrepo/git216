@@ -103,7 +103,7 @@ Requires:       perl(Error)
 %if ! %{defined perl_bootstrap}
 Requires:       perl(Term::ReadKey)
 %endif
-Requires:       perl-Git%{?ius_suffix} = %{version}-%{release}
+Requires:       git%{?ius_suffix}-perl-Git = %{version}-%{release}
 
 Provides:       git = %{version}-%{release}
 Provides:       git%{?_isa} = %{version}-%{release}
@@ -141,7 +141,7 @@ Requires:       git%{?ius_suffix}-gui = %{version}-%{release}
 Requires:       git%{?ius_suffix}-svn = %{version}-%{release}
 Requires:       git%{?ius_suffix}-p4 = %{version}-%{release}
 Requires:       git%{?ius_suffix}-gitk = %{version}-%{release}
-Requires:       perl-Git%{?ius_suffix} = %{version}-%{release}
+Requires:       git%{?ius_suffix}-perl-Git = %{version}-%{release}
 %if ! %{defined perl_bootstrap}
 Requires:       perl(Term::ReadKey)
 %endif
@@ -275,7 +275,7 @@ Group:          Development/Tools
 BuildArch:      noarch
 %endif
 Requires:       git%{?ius_suffix} = %{version}-%{release}
-Requires:       perl-Git%{?ius_suffix} = %{version}-%{release}
+Requires:       git%{?ius_suffix}-perl-Git = %{version}-%{release}
 Requires:       perl(Authen::SASL)
 Requires:       perl(Net::SMTP::SSL)
 Provides:       git-email = %{version}-%{release}
@@ -314,7 +314,7 @@ Obsoletes:      gitk%{?ius_suffix} <= 2.6.4-2.ius
 %description gitk
 Git revision tree visualiser.
 
-%package -n perl-Git%{?ius_suffix}
+%package perl-Git
 Summary:        Perl interface to Git
 Group:          Development/Libraries
 %if %{noarch_sub}
@@ -326,8 +326,11 @@ Requires:       perl(Error)
 Requires:       perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
 Provides:       perl-Git = %{version}-%{release}
 Conflicts:      perl-Git < %{version}
+# rename from perl-Git2u to git2u-perl-Git
+Provides:       perl-Git%{?ius_suffix} = %{version}-%{release}
+Obsoletes:      perl-Git%{?ius_suffix} <= 2.6.4-2.ius
 
-%description -n perl-Git%{?ius_suffix}
+%description perl-Git
 Perl interface to Git.
 
 %package -n perl-Git%{?ius_suffix}-SVN
@@ -668,7 +671,7 @@ rm -rf %{buildroot}
 %{!?_without_docs: %{_mandir}/man1/*gitk*.1*}
 %{!?_without_docs: %doc Documentation/*gitk*.html }
 
-%files -n perl-Git%{?ius_suffix} -f perl-git-files
+%files perl-Git -f perl-git-files
 %exclude %{_mandir}/man3/*Git*SVN*.3pm*
 %{!?_without_docs: %{_mandir}/man3/*Git*.3pm*}
 
@@ -715,6 +718,7 @@ rm -rf %{buildroot}
 - Create git-core and git-core-doc subpackages (following Fedora)
 - Rename gitweb2u to git2u-gitweb
 - Rename gitk2u to git2u-gitk
+- Rename perl-Git2u to git2u-perl-Git
 
 * Wed Dec 09 2015 Ben Harper <ben.harper@rackspace.com> - 2.6.4-1.ius
 - Latest upstream
