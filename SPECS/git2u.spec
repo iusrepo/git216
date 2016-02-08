@@ -49,7 +49,7 @@
 %global ius_suffix 2u
 
 Name:           git%{?ius_suffix}
-Version:        2.7.0
+Version:        2.7.1
 Release:        1.ius%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
@@ -715,6 +715,9 @@ rm -rf %{buildroot}
 # No files for you!
 
 %changelog
+* Mon Feb 08 2016 Ben Harper <ben.harper@rackspace.com> - 2.7.1-1.ius
+- Latest upstream
+
 * Fri Jan 08 2016 Carl George <carl.george@rackspace.com> - 2.7.0-1.ius
 - Latest upstream
 - Patch4 (infinite loop) no longer needed
