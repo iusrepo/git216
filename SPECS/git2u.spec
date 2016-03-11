@@ -49,7 +49,7 @@
 %global ius_suffix 2u
 
 Name:           git%{?ius_suffix}
-Version:        2.7.2
+Version:        2.7.3
 Release:        1.ius%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
@@ -719,6 +719,9 @@ rm -rf %{buildroot}
 # No files for you!
 
 %changelog
+* Fri Mar 11 2016 Ben Harper <ben.harper@rackspace.com> - 2.7.3-1.ius
+- Latest upstream
+
 * Wed Feb 24 2016 Ben Harper <ben.harper@rackspace.com> - 2.7.2-1.ius
 - Latest upstream
 - Add Patch100 to address https://github.com/iuscommunity-pkg/git2u/issues/3
