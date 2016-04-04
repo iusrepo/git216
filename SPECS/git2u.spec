@@ -53,7 +53,7 @@
 %global ius_suffix 2u
 
 Name:           git%{?ius_suffix}
-Version:        2.8.0
+Version:        2.8.1
 Release:        1.ius%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
@@ -731,6 +731,9 @@ rm -rf %{buildroot}
 # No files for you!
 
 %changelog
+* Mon Apr 04 2016 Ben Harper <ben.harper@rackspace.com> - 2.8.1.1-ius
+- Latest upstream
+
 * Tue Mar 29 2016 Ben Harper <ben.harper@rackspace.com> - 2.8.0-1.ius
 - Latest upstream
 - update bash-completion and %file to align with Fedora
