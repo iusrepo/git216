@@ -53,7 +53,7 @@
 %global ius_suffix 2u
 
 Name:           git%{?ius_suffix}
-Version:        2.8.1
+Version:        2.8.2
 Release:        1.ius%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
@@ -97,6 +97,7 @@ BuildRequires:  %{libcurl_devel}
 BuildRequires:  libgnome-keyring-devel
 %endif
 BuildRequires:  pcre-devel
+BuildRequires: perl(Test)
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel >= 1.2
 %if %{bashcomp_pkgconfig}
@@ -418,6 +419,9 @@ find prebuilt_docs/html -type d | xargs rmdir --ignore-fail-on-non-empty
 cat << \EOF > config.mak
 V = 1
 CFLAGS = %{optflags}
+%if 0%{?rhel} >= 7
+LDFLAGS = "%{__global_ldflags}"
+%endif
 BLK_SHA1 = 1
 NEEDS_CRYPTO_WITH_SSL = 1
 USE_LIBPCRE = 1
@@ -475,6 +479,7 @@ make -C contrib/emacs
 %if %{gnome_keyring}
 make -C contrib/credential/gnome-keyring/
 %endif
+make -C contrib/credential/netrc/
 
 make -C contrib/subtree/
 
@@ -605,7 +610,7 @@ chmod a-x Documentation/technical/api-index.sh
 find contrib -type f | xargs chmod -x
 
 # Split core files
-not_core_re="git-(add--interactive|am|difftool|instaweb|relink|request-pull|send-mail|submodule)|gitweb|prepare-commit-msg|pre-rebase"
+not_core_re="git-(add--interactive|am|credential-netrc|difftool|instaweb|relink|request-pull|send-mail|submodule)|gitweb|prepare-commit-msg|pre-rebase"
 grep -vE "$not_core_re|\/man\/" bin-man-doc-files > bin-files-core
 grep -vE "$not_core_re" bin-man-doc-files | grep "\/man\/" > man-doc-files-core
 grep -E "$not_core_re" bin-man-doc-files > bin-man-doc-git-files
@@ -731,7 +736,13 @@ rm -rf %{buildroot}
 # No files for you!
 
 %changelog
-* Mon Apr 04 2016 Ben Harper <ben.harper@rackspace.com> - 2.8.1.1-ius
+* Mon May 02 2016 Ben Harper <ben.harper@rackspace.com> - 2.8.2-1.ius
+- Latest upstream
+- Install git-credentials-netrc and set LDFLAGS to align with Fedora
+  http://pkgs.fedoraproject.org/cgit/rpms/git.git/commit/?id=40aebfdc03db94710343ddc1b0e0208a14684ef1
+  http://pkgs.fedoraproject.org/cgit/rpms/git.git/commit/?id=58fa1693f75e7c2bbf4fe4854214bbbda6a527ab
+
+* Mon Apr 04 2016 Ben Harper <ben.harper@rackspace.com> - 2.8.1-1.ius
 - Latest upstream
 
 * Tue Mar 29 2016 Ben Harper <ben.harper@rackspace.com> - 2.8.0-1.ius
