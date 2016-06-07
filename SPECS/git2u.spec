@@ -53,7 +53,7 @@
 %global ius_suffix 2u
 
 Name:           git%{?ius_suffix}
-Version:        2.8.3
+Version:        2.8.4
 Release:        1.ius%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
@@ -736,6 +736,9 @@ rm -rf %{buildroot}
 # No files for you!
 
 %changelog
+* Tue Jun 07 2016 Ben Harper <ben.harper@rackspace.com> - 2.8.4-1.ius
+- Latest upstream
+
 * Fri May 20 2016 Carl George <carl.george@rackspace.com> - 2.8.3-1.ius
 - Latest upstream
 
