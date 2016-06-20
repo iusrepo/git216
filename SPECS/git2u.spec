@@ -519,6 +519,8 @@ install -pm 755 contrib/credential/gnome-keyring/git-credential-gnome-keyring \
 # Remove built binary files, otherwise they will be installed in doc
 make -C contrib/credential/gnome-keyring/ clean
 %endif
+install -pm 755 contrib/credential/netrc/git-credential-netrc \
+    %{buildroot}%{gitcoredir}
 
 make -C contrib/subtree install
 %if ! %{use_prebuilt_docs}
