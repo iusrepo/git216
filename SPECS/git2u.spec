@@ -610,7 +610,7 @@ cat git.lang >> bin-man-doc-files
 # quiet some rpmlint complaints
 chmod -R g-w %{buildroot}
 find %{buildroot} -name git-mergetool--lib | xargs chmod a-x
-rm -f {Documentation/technical,contrib/emacs,contrib/credential/gnome-keyring}/.gitignore
+find . -name .gitignore -delete
 chmod a-x Documentation/technical/api-index.sh
 find contrib -type f | xargs chmod -x
 
@@ -745,6 +745,7 @@ rm -rf %{buildroot}
 - Latest upstream
 - Use perl(MOD::NAME) format for perl-DBD-SQLite dep (Fedora)
 - Define __global_ldflags on EL < 7 (Fedora)
+- Remove all '.gitignore' files from packages (Fedora)
 
 * Tue Jun 07 2016 Ben Harper <ben.harper@rackspace.com> - 2.8.4-1.ius
 - Latest upstream
