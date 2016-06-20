@@ -272,7 +272,7 @@ BuildArch:      noarch
 %endif
 Requires:       git%{?ius_suffix} = %{version}-%{release}, cvs
 Requires:       cvsps
-Requires:       perl-DBD-SQLite
+Requires:       perl(DBD::SQLite)
 Provides:       git-cvs = %{version}-%{release}
 Conflicts:      git-cvs < %{version}
 
@@ -738,6 +738,7 @@ rm -rf %{buildroot}
 %changelog
 * Mon Jun 20 2016 Carl George <carl.george@rackspace.com> - 2.9.0-1.ius
 - Latest upstream
+- Use perl(MOD::NAME) format for perl-DBD-SQLite dep (Fedora)
 
 * Tue Jun 07 2016 Ben Harper <ben.harper@rackspace.com> - 2.8.4-1.ius
 - Latest upstream
