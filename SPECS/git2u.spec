@@ -48,6 +48,11 @@
 %global use_systemd         0
 %endif
 
+# Settings for EL <= 7
+%if 0%{?rhel} && 0%{?rhel} <= 7
+%{!?__global_ldflags: %global __global_ldflags -Wl,-z,relro}
+%endif
+
 %{!?_pkgdocdir: %global _pkgdocdir %{_docdir}/%{name}-%{version}}
 
 %global ius_suffix 2u
@@ -419,9 +424,7 @@ find prebuilt_docs/html -type d | xargs rmdir --ignore-fail-on-non-empty
 cat << \EOF > config.mak
 V = 1
 CFLAGS = %{optflags}
-%if 0%{?rhel} >= 7
-LDFLAGS = "%{__global_ldflags}"
-%endif
+LDFLAGS = %{__global_ldflags}
 BLK_SHA1 = 1
 NEEDS_CRYPTO_WITH_SSL = 1
 USE_LIBPCRE = 1
@@ -739,6 +742,7 @@ rm -rf %{buildroot}
 * Mon Jun 20 2016 Carl George <carl.george@rackspace.com> - 2.9.0-1.ius
 - Latest upstream
 - Use perl(MOD::NAME) format for perl-DBD-SQLite dep (Fedora)
+- Define __global_ldflags on EL < 7 (Fedora)
 
 * Tue Jun 07 2016 Ben Harper <ben.harper@rackspace.com> - 2.8.4-1.ius
 - Latest upstream
