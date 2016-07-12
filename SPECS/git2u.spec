@@ -58,7 +58,7 @@
 %global ius_suffix 2u
 
 Name:           git%{?ius_suffix}
-Version:        2.9.0
+Version:        2.9.1
 Release:        1.ius%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
@@ -741,6 +741,9 @@ rm -rf %{buildroot}
 # No files for you!
 
 %changelog
+* Tue Jul 12 2016 Carl George <carl.george@rackspace.com> - 2.9.1-1.ius
+- Latest upstream
+
 * Mon Jun 20 2016 Carl George <carl.george@rackspace.com> - 2.9.0-1.ius
 - Latest upstream
 - Use perl(MOD::NAME) format for perl-DBD-SQLite dep (Fedora)
