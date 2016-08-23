@@ -8,7 +8,16 @@
 # - Explicitly enable ipv6 for git-daemon
 # - Use prebuilt documentation, asciidoc is too old
 # - Define missing python macro
-%if 0%{?rhel} && 0%{?rhel} <= 5
+%if 0%{?rhel} && 0%{?rhel} > 5
+%global gitcoredir          %{_libexecdir}/git-core
+%global noarch_sub          1
+%global libcurl_devel       libcurl-devel
+%global emacs_old           0
+%global docbook_suppress_sp 0
+%global enable_ipv6         0
+%global use_prebuilt_docs   0
+%global filter_yaml_any     0
+%else
 %global gitcoredir          %{_bindir}
 %global noarch_sub          0
 %global libcurl_devel       curl-devel
@@ -18,15 +27,6 @@
 %global use_prebuilt_docs   1
 %global filter_yaml_any     1
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
-%else
-%global gitcoredir          %{_libexecdir}/git-core
-%global noarch_sub          1
-%global libcurl_devel       libcurl-devel
-%global emacs_old           0
-%global docbook_suppress_sp 0
-%global enable_ipv6         0
-%global use_prebuilt_docs   0
-%global filter_yaml_any     0
 %endif
 
 # Settings for F-19+ and EL-7+
@@ -48,8 +48,9 @@
 %global use_systemd         0
 %endif
 
-# Settings for EL <= 7
-%if 0%{?rhel} && 0%{?rhel} <= 7
+# Settings for EL >= 7
+%if 0%{?rhel} && 0%{?rhel} >= 7
+%else
 %{!?__global_ldflags: %global __global_ldflags -Wl,-z,relro}
 %endif
 
