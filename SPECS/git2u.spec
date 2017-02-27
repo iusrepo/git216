@@ -58,7 +58,7 @@
 %global ius_suffix 2u
 
 Name:           git%{?ius_suffix}
-Version:        2.11.1
+Version:        2.12.0
 Release:        1.ius%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
@@ -83,9 +83,6 @@ Patch3:         git-1.7-el5-emacs-support.patch
 # http://thread.gmane.org/gmane.comp.version-control.git/266145
 # could be removed when update/branch of Michael will be merged in upstream
 #Patch4:         git-infinite-loop.patch
-
-# https://github.com/iuscommunity-pkg/git2u/issues/3
-Patch100:       git-2.7.1-use-hex-colors.patch
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -408,7 +405,6 @@ Obsoletes:      emacs-git-el%{?ius_suffix} <= 2.1.3-2.ius
 %patch3 -p1
 %endif
 #patch4 -p1
-%patch100 -p1
 
 %if %{use_prebuilt_docs}
 mkdir -p prebuilt_docs/{html,man}
@@ -741,6 +737,10 @@ rm -rf %{buildroot}
 # No files for you!
 
 %changelog
+* Mon Feb 27 2017 Ben Harper <ben.harper@rackspace.com> - 2.12.0-1.ius
+- Latest upstream
+- remove Patch100, fixed upstream
+
 * Fri Feb 03 2017 Ben Harper <ben.harper@rackspace.com> - 2.11.1-1.ius
 - Latest upstream
 
