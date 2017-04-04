@@ -137,7 +137,6 @@ Summary:        Core package of git with minimal functionality
 Group:          Development/Tools
 Requires:       less
 Requires:       openssh-clients
-Requires:       rsync
 Requires:       zlib >= 1.2
 Provides:       git-core = %{version}-%{release}
 Conflicts:      git-core < %{version}
@@ -649,6 +648,7 @@ rm -rf %{buildroot}
 - Latest upstream
 - Remove EL5 support
 - Clean up sources to better align with Fedora
+- Remove unnecessary rsync requirement from git-core (Fedora)
 
 * Tue Mar 21 2017 Ben Harper <ben.harper@rackspace.com> - 2.12.1-1.ius
 - Latest upstream
