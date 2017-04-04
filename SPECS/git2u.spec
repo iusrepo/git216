@@ -526,6 +526,9 @@ grep -vE "$not_core_re|\/man\/" bin-man-doc-files > bin-files-core
 grep -vE "$not_core_re" bin-man-doc-files | grep "\/man\/" > man-doc-files-core
 grep -E "$not_core_re" bin-man-doc-files > bin-man-doc-git-files
 
+%check
+make test
+
 %clean
 rm -rf %{buildroot}
 
@@ -649,6 +652,7 @@ rm -rf %{buildroot}
 - Remove EL5 support
 - Clean up sources to better align with Fedora
 - Remove unnecessary rsync requirement from git-core (Fedora)
+- Run git test suite (Fedora)
 
 * Tue Mar 21 2017 Ben Harper <ben.harper@rackspace.com> - 2.12.1-1.ius
 - Latest upstream
