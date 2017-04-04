@@ -1,40 +1,13 @@
 # Pass --without docs to rpmbuild if you don't want the documentation
 
-# Settings for EL-5
-# - Leave git-* binaries in %{_bindir}
-# - Don't use noarch subpackages
-# - Use proper libcurl devel package
-# - Patch emacs and tweak docbook spaces
-# - Explicitly enable ipv6 for git-daemon
-# - Use prebuilt documentation, asciidoc is too old
-# - Define missing python macro
-%if 0%{?rhel} && 0%{?rhel} <= 5
-%global gitcoredir          %{_bindir}
-%global noarch_sub          0
-%global libcurl_devel       curl-devel
-%global emacs_old           1
-%global docbook_suppress_sp 1
-%global enable_ipv6         1
-%global use_prebuilt_docs   1
-%global filter_yaml_any     1
-%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
-%else
 %global gitcoredir          %{_libexecdir}/git-core
-%global noarch_sub          1
-%global libcurl_devel       libcurl-devel
-%global emacs_old           0
-%global docbook_suppress_sp 0
-%global enable_ipv6         0
 %global use_prebuilt_docs   0
-%global filter_yaml_any     0
-%endif
 
 # Settings for F-19+ and EL-7+
 %if 0%{?fedora} >= 19 || 0%{?rhel} >= 7
 %global bashcomp_pkgconfig  1
 %global bashcompdir %(pkg-config --variable=completionsdir bash-completion 2>/dev/null)
 %global bashcomproot %(dirname %{bashcompdir} 2>/dev/null)
-%global desktop_vendor_tag  0
 %global gnome_keyring       1
 %global use_new_rpm_filters 1
 %global use_systemd         1
@@ -42,7 +15,6 @@
 %global bashcomp_pkgconfig  0
 %global bashcompdir %{_sysconfdir}/bash_completion.d
 %global bashcomproot %{bashcompdir}
-%global desktop_vendor_tag  1
 %global gnome_keyring       0
 %global use_new_rpm_filters 0
 %global use_systemd         0
@@ -77,14 +49,10 @@ Source13:       git.socket
 Patch0:         git-1.8-gitweb-home-link.patch
 # https://bugzilla.redhat.com/490602
 Patch1:         git-cvsimport-Ignore-cvsps-2.2b1-Branches-output.patch
-# https://bugzilla.redhat.com/600411
-Patch3:         git-1.7-el5-emacs-support.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1204193
 # http://thread.gmane.org/gmane.comp.version-control.git/266145
 # could be removed when update/branch of Michael will be merged in upstream
 #Patch4:         git-infinite-loop.patch
-
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %if ! %{use_prebuilt_docs} && ! 0%{?_without_docs}
 BuildRequires:  asciidoc >= 8.4.1
@@ -94,7 +62,7 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  emacs
 BuildRequires:  expat-devel
 BuildRequires:  gettext
-BuildRequires:  %{libcurl_devel}
+BuildRequires:  libcurl-devel
 %if %{gnome_keyring}
 BuildRequires:  libgnome-keyring-devel
 %endif
@@ -144,9 +112,7 @@ tools for integrating with other SCMs, install the git-all meta-package.
 %package all
 Summary:        Meta-package to pull in all git tools
 Group:          Development/Tools
-%if %{noarch_sub}
 BuildArch:      noarch
-%endif
 Requires:       git%{?ius_suffix} = %{version}-%{release}
 Requires:       git%{?ius_suffix}-cvs = %{version}-%{release}
 Requires:       git%{?ius_suffix}-email = %{version}-%{release}
@@ -223,9 +189,7 @@ The git dæmon for supporting git:// access to git repositories
 %package gitweb
 Summary:        Simple web interface to git repositories
 Group:          Development/Tools
-%if %{noarch_sub}
 BuildArch:      noarch
-%endif
 Requires:       git%{?ius_suffix} = %{version}-%{release}
 Provides:       gitweb = %{version}-%{release}
 Provides:       config(gitweb) = %{version}-%{release}
@@ -240,9 +204,7 @@ Simple web interface to track changes in git repositories
 %package p4
 Summary:        Git tools for working with Perforce depots
 Group:          Development/Tools
-%if %{noarch_sub}
 BuildArch:      noarch
-%endif
 BuildRequires:  python
 Requires:       git%{?ius_suffix} = %{version}-%{release}
 Provides:       git-p4 = %{version}-%{release}
@@ -269,9 +231,7 @@ Git tools for importing Subversion repositories.
 %package cvs
 Summary:        Git tools for importing CVS repositories
 Group:          Development/Tools
-%if %{noarch_sub}
 BuildArch:      noarch
-%endif
 Requires:       git%{?ius_suffix} = %{version}-%{release}, cvs
 Requires:       cvsps
 Requires:       perl(DBD::SQLite)
@@ -284,9 +244,7 @@ Git tools for importing CVS repositories.
 %package email
 Summary:        Git tools for sending email
 Group:          Development/Tools
-%if %{noarch_sub}
 BuildArch:      noarch
-%endif
 Requires:       git%{?ius_suffix} = %{version}-%{release}
 Requires:       git%{?ius_suffix}-perl-Git = %{version}-%{release}
 Requires:       perl(Authen::SASL)
@@ -300,9 +258,7 @@ Git tools for sending email.
 %package gui
 Summary:        Git GUI tool
 Group:          Development/Tools
-%if %{noarch_sub}
 BuildArch:      noarch
-%endif
 Requires:       git%{?ius_suffix} = %{version}-%{release}, tk >= 8.4
 Requires:       git%{?ius_suffix}-gitk = %{version}-%{release}
 Provides:       git-gui = %{version}-%{release}
@@ -314,9 +270,7 @@ Git GUI tool.
 %package gitk
 Summary:        Git revision tree visualiser
 Group:          Development/Tools
-%if %{noarch_sub}
 BuildArch:      noarch
-%endif
 Requires:       git%{?ius_suffix} = %{version}-%{release}, tk >= 8.4
 Provides:       gitk = %{version}-%{release}
 Conflicts:      gitk < %{version}
@@ -330,9 +284,7 @@ Git revision tree visualiser.
 %package perl-Git
 Summary:        Perl interface to Git
 Group:          Development/Libraries
-%if %{noarch_sub}
 BuildArch:      noarch
-%endif
 Requires:       git%{?ius_suffix} = %{version}-%{release}
 BuildRequires:  perl(Error), perl(ExtUtils::MakeMaker)
 Requires:       perl(Error)
@@ -349,9 +301,7 @@ Perl interface to Git.
 %package perl-Git-SVN
 Summary:        Perl interface to Git::SVN
 Group:          Development/Libraries
-%if %{noarch_sub}
 BuildArch:      noarch
-%endif
 Requires:       git%{?ius_suffix} = %{version}-%{release}
 Requires:       perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
 Provides:       perl-Git-SVN = %{version}-%{release}
@@ -370,12 +320,8 @@ Perl interface to Git.
 Summary:        Git version control system support for Emacs
 Group:          Applications/Editors
 Requires:       git%{?ius_suffix} = %{version}-%{release}
-%if %{noarch_sub}
 BuildArch:      noarch
 Requires:       emacs(bin) >= %{_emacs_version}
-%else
-Requires:       emacs-common
-%endif
 Provides:       emacs-git = %{version}-%{release}
 Conflicts:      emacs-git < %{version}
 
@@ -385,9 +331,7 @@ Conflicts:      emacs-git < %{version}
 %package -n emacs-git%{?ius_suffix}-el
 Summary:        Elisp source files for git version control system support for Emacs
 Group:          Applications/Editors
-%if %{noarch_sub}
 BuildArch:      noarch
-%endif
 Requires:       emacs-git%{?ius_suffix} = %{version}-%{release}
 Provides:       emacs-git-el = %{version}-%{release}
 Conflicts:      emacs-git-el < %{version}
@@ -401,9 +345,6 @@ Obsoletes:      emacs-git-el%{?ius_suffix} <= 2.1.3-2.ius
 %setup -q -n git-%{version}
 %patch0 -p1
 %patch1 -p1
-%if %{emacs_old}
-%patch3 -p1
-%endif
 #patch4 -p1
 
 %if %{use_prebuilt_docs}
@@ -434,15 +375,6 @@ prefix = %{_prefix}
 gitwebdir = %{_var}/www/git
 EOF
 
-%if "%{gitcoredir}" == "%{_bindir}"
-echo gitexecdir = %{_bindir} >> config.mak
-%endif
-
-%if %{docbook_suppress_sp}
-# This is needed for 1.69.1-1.71.0
-echo DOCBOOK_SUPPRESS_SP = 1 >> config.mak
-%endif
-
 # Filter bogus perl requires
 # packed-refs comes from a comment in contrib/hooks/update-paranoid
 # YAML::Any is optional and not available on el5
@@ -457,9 +389,6 @@ cat << \EOF > %{name}-req
 #!/bin/sh
 %{__perl_requires} $* |\
 sed \
-%if %{filter_yaml_any}
-    -e '/perl(YAML::Any)/d' \
-%endif
     -e '/perl(packed-refs)/d'
 EOF
 
@@ -495,10 +424,6 @@ cp -a prebuilt_docs/man/* %{buildroot}%{_mandir}
 cp -a prebuilt_docs/html/* Documentation/
 %endif
 
-%if %{emacs_old}
-%global _emacs_sitelispdir %{_datadir}/emacs/site-lisp
-%global _emacs_sitestartdir %{_emacs_sitelispdir}/site-start.d
-%endif
 %global elispdir %{_emacs_sitelispdir}/git
 make -C contrib/emacs install \
     emacsdir=%{buildroot}%{elispdir}
@@ -558,15 +483,9 @@ mkdir -p %{buildroot}%{_unitdir}
 cp -a %{SOURCE12} %{SOURCE13} %{buildroot}%{_unitdir}
 %else
 mkdir -p %{buildroot}%{_sysconfdir}/xinetd.d
-# On EL <= 5, xinetd does not enable IPv6 by default
-enable_ipv6="        # xinetd does not enable IPv6 by default
-        flags           = IPv6"
 perl -p \
     -e "s|\@GITCOREDIR\@|%{gitcoredir}|g;" \
     -e "s|\@BASE_PATH\@|%{_var}/lib/git|g;" \
-%if %{enable_ipv6}
-    -e "s|^}|$enable_ipv6\n$&|;" \
-%endif
     %{SOURCE3} > %{buildroot}%{_sysconfdir}/xinetd.d/git
 %endif
 
@@ -594,9 +513,6 @@ install -pm 644 contrib/completion/git-prompt.sh \
 
 # install git-gui .desktop file
 desktop-file-install \
-%if %{desktop_vendor_tag}
-  --vendor fedora \
-%endif
   --dir=%{buildroot}%{_datadir}/applications %{SOURCE5}
 
 # find translations
@@ -667,9 +583,7 @@ rm -rf %{buildroot}
 
 %files cvs
 %doc Documentation/*git-cvs*.txt
-%if "%{gitcoredir}" != "%{_bindir}"
 %{_bindir}/git-cvsserver
-%endif
 %{gitcoredir}/*cvs*
 %{!?_without_docs: %{_mandir}/man1/*cvs*.1*}
 %{!?_without_docs: %doc Documentation/*git-cvs*.html }
@@ -739,6 +653,7 @@ rm -rf %{buildroot}
 %changelog
 * Tue Apr 04 2017 Carl George <carl.george@rackspace.com> - 2.12.2-1.ius
 - Latest upstream
+- Remove EL5 support
 
 * Tue Mar 21 2017 Ben Harper <ben.harper@rackspace.com> - 2.12.1-1.ius
 - Latest upstream
