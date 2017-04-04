@@ -25,8 +25,6 @@
 %{!?__global_ldflags: %global __global_ldflags -Wl,-z,relro}
 %endif
 
-%{!?_pkgdocdir: %global _pkgdocdir %{_docdir}/%{name}-%{version}}
-
 %global ius_suffix 2u
 
 Name:           git%{?ius_suffix}
@@ -49,10 +47,6 @@ Source13:       git.socket
 Patch0:         git-1.8-gitweb-home-link.patch
 # https://bugzilla.redhat.com/490602
 Patch1:         git-cvsimport-Ignore-cvsps-2.2b1-Branches-output.patch
-# https://bugzilla.redhat.com/show_bug.cgi?id=1204193
-# http://thread.gmane.org/gmane.comp.version-control.git/266145
-# could be removed when update/branch of Michael will be merged in upstream
-#Patch4:         git-infinite-loop.patch
 
 %if ! %{use_prebuilt_docs} && ! 0%{?_without_docs}
 BuildRequires:  asciidoc >= 8.4.1
@@ -67,24 +61,24 @@ BuildRequires:  libcurl-devel
 BuildRequires:  libgnome-keyring-devel
 %endif
 BuildRequires:  pcre-devel
-BuildRequires: perl(Test)
+BuildRequires:  perl(Test)
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel >= 1.2
 %if %{bashcomp_pkgconfig}
-BuildRequires: pkgconfig(bash-completion)
+BuildRequires:  pkgconfig(bash-completion)
 %endif
 %if %{use_systemd}
 # For macros
 BuildRequires:  systemd
 %endif
 
-Requires:       git%{?ius_suffix}-core = %{version}-%{release}
-Requires:       git%{?ius_suffix}-core-doc = %{version}-%{release}
+Requires:       %{name}-core = %{version}-%{release}
+Requires:       %{name}-core-doc = %{version}-%{release}
 Requires:       perl(Error)
 %if ! %{defined perl_bootstrap}
 Requires:       perl(Term::ReadKey)
 %endif
-Requires:       git%{?ius_suffix}-perl-Git = %{version}-%{release}
+Requires:       %{name}-perl-Git = %{version}-%{release}
 
 Provides:       git = %{version}-%{release}
 Provides:       git%{?_isa} = %{version}-%{release}
@@ -97,8 +91,8 @@ Conflicts:      git < %{version}
 # https://github.com/git/git/blob/v2.7.0/contrib/remote-helpers/git-remote-hg
 #
 # Obsolete them here to provide a clean upgrade path.
-Obsoletes:      git%{?ius_suffix}-bzr <= 2.6.4-2.ius
-Obsoletes:      git%{?ius_suffix}-hg <= 2.6.4-2.ius
+Obsoletes:      %{name}-bzr <= 2.6.4-2.ius
+Obsoletes:      %{name}-hg <= 2.6.4-2.ius
 
 %description
 Git is a fast, scalable, distributed revision control system with an
@@ -113,18 +107,18 @@ tools for integrating with other SCMs, install the git-all meta-package.
 Summary:        Meta-package to pull in all git tools
 Group:          Development/Tools
 BuildArch:      noarch
-Requires:       git%{?ius_suffix} = %{version}-%{release}
-Requires:       git%{?ius_suffix}-cvs = %{version}-%{release}
-Requires:       git%{?ius_suffix}-email = %{version}-%{release}
-Requires:       git%{?ius_suffix}-gui = %{version}-%{release}
-Requires:       git%{?ius_suffix}-svn = %{version}-%{release}
-Requires:       git%{?ius_suffix}-p4 = %{version}-%{release}
-Requires:       git%{?ius_suffix}-gitk = %{version}-%{release}
-Requires:       git%{?ius_suffix}-perl-Git = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
+Requires:       %{name}-cvs = %{version}-%{release}
+Requires:       %{name}-email = %{version}-%{release}
+Requires:       %{name}-gui = %{version}-%{release}
+Requires:       %{name}-svn = %{version}-%{release}
+Requires:       %{name}-p4 = %{version}-%{release}
+Requires:       %{name}-gitk = %{version}-%{release}
+Requires:       %{name}-perl-Git = %{version}-%{release}
 %if ! %{defined perl_bootstrap}
 Requires:       perl(Term::ReadKey)
 %endif
-Requires:       emacs-git%{?ius_suffix} = %{version}-%{release}
+Requires:       emacs-%{name} = %{version}-%{release}
 Conflicts:      git-all < %{version}
 Provides:       git-all = %{version}-%{release} 
 #Obsoletes:      git <= 1.5.4.3
@@ -137,7 +131,7 @@ and full access to internals.
 This is a dummy package which brings in all subpackages.
 
 %package core
-Summary:        Core package of git with minimal funcionality
+Summary:        Core package of git with minimal functionality
 Group:          Development/Tools
 Requires:       less
 Requires:       openssh-clients
@@ -159,7 +153,7 @@ other SCMs, install the git-all meta-package.
 %package core-doc
 Summary:        Documentation files for git-core
 Group:          Development/Tools
-Requires:       git%{?ius_suffix}-core = %{version}-%{release}
+Requires:       %{name}-core = %{version}-%{release}
 Provides:       git-core-doc = %{version}-%{release}
 Conflicts:      git-core-doc < %{version}
 
@@ -167,9 +161,9 @@ Conflicts:      git-core-doc < %{version}
 Documentation files for git-core package including man pages.
 
 %package daemon
-Summary:        Git protocol dæmon
+Summary:        Git protocol daemon
 Group:          Development/Tools
-Requires:       git%{?ius_suffix} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 %if %{use_systemd}
 Requires:       systemd
 Requires(post): systemd
@@ -184,13 +178,13 @@ Provides:       config(git-daemon) = %{version}-%{release}
 Conflicts:      git-daemon < %{version}
 
 %description daemon
-The git dæmon for supporting git:// access to git repositories
+The git daemon for supporting git:// access to git repositories
 
 %package gitweb
 Summary:        Simple web interface to git repositories
 Group:          Development/Tools
 BuildArch:      noarch
-Requires:       git%{?ius_suffix} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 Provides:       gitweb = %{version}-%{release}
 Provides:       config(gitweb) = %{version}-%{release}
 Conflicts:      gitweb < %{version}
@@ -206,7 +200,7 @@ Summary:        Git tools for working with Perforce depots
 Group:          Development/Tools
 BuildArch:      noarch
 BuildRequires:  python
-Requires:       git%{?ius_suffix} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 Provides:       git-p4 = %{version}-%{release}
 Conflicts:      git-p4 < %{version}
 
@@ -216,7 +210,7 @@ Conflicts:      git-p4 < %{version}
 %package svn
 Summary:        Git tools for importing Subversion repositories
 Group:          Development/Tools
-Requires:       git%{?ius_suffix} = %{version}-%{release}, subversion
+Requires:       %{name} = %{version}-%{release}, subversion
 Requires:       perl(Digest::MD5)
 %if ! %{defined perl_bootstrap}
 Requires:       perl(Term::ReadKey)
@@ -232,7 +226,7 @@ Git tools for importing Subversion repositories.
 Summary:        Git tools for importing CVS repositories
 Group:          Development/Tools
 BuildArch:      noarch
-Requires:       git%{?ius_suffix} = %{version}-%{release}, cvs
+Requires:       %{name} = %{version}-%{release}, cvs
 Requires:       cvsps
 Requires:       perl(DBD::SQLite)
 Provides:       git-cvs = %{version}-%{release}
@@ -245,8 +239,8 @@ Git tools for importing CVS repositories.
 Summary:        Git tools for sending email
 Group:          Development/Tools
 BuildArch:      noarch
-Requires:       git%{?ius_suffix} = %{version}-%{release}
-Requires:       git%{?ius_suffix}-perl-Git = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
+Requires:       %{name}-perl-Git = %{version}-%{release}
 Requires:       perl(Authen::SASL)
 Requires:       perl(Net::SMTP::SSL)
 Provides:       git-email = %{version}-%{release}
@@ -259,8 +253,8 @@ Git tools for sending email.
 Summary:        Git GUI tool
 Group:          Development/Tools
 BuildArch:      noarch
-Requires:       git%{?ius_suffix} = %{version}-%{release}, tk >= 8.4
-Requires:       git%{?ius_suffix}-gitk = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}, tk >= 8.4
+Requires:       %{name}-gitk = %{version}-%{release}
 Provides:       git-gui = %{version}-%{release}
 Conflicts:      git-gui < %{version}
 
@@ -271,7 +265,7 @@ Git GUI tool.
 Summary:        Git revision tree visualiser
 Group:          Development/Tools
 BuildArch:      noarch
-Requires:       git%{?ius_suffix} = %{version}-%{release}, tk >= 8.4
+Requires:       %{name} = %{version}-%{release}, tk >= 8.4
 Provides:       gitk = %{version}-%{release}
 Conflicts:      gitk < %{version}
 # rename from gitk2u to git2u-gitk
@@ -285,7 +279,7 @@ Git revision tree visualiser.
 Summary:        Perl interface to Git
 Group:          Development/Libraries
 BuildArch:      noarch
-Requires:       git%{?ius_suffix} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 BuildRequires:  perl(Error), perl(ExtUtils::MakeMaker)
 Requires:       perl(Error)
 Requires:       perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
@@ -302,7 +296,7 @@ Perl interface to Git.
 Summary:        Perl interface to Git::SVN
 Group:          Development/Libraries
 BuildArch:      noarch
-Requires:       git%{?ius_suffix} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 Requires:       perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
 Provides:       perl-Git-SVN = %{version}-%{release}
 Conflicts:      perl-Git-SVN < %{version}
@@ -316,36 +310,35 @@ Obsoletes:      perl-Git%{?ius_suffix}-SVN <= 2.6.4-2.ius
 %description perl-Git-SVN
 Perl interface to Git.
 
-%package -n emacs-git%{?ius_suffix}
+%package -n emacs-%{name}
 Summary:        Git version control system support for Emacs
 Group:          Applications/Editors
-Requires:       git%{?ius_suffix} = %{version}-%{release}
+Requires:       %{name} = %{version}-%{release}
 BuildArch:      noarch
 Requires:       emacs(bin) >= %{_emacs_version}
 Provides:       emacs-git = %{version}-%{release}
 Conflicts:      emacs-git < %{version}
 
-%description -n emacs-git%{?ius_suffix}
+%description -n emacs-%{name}
 %{summary}.
 
-%package -n emacs-git%{?ius_suffix}-el
+%package -n emacs-%{name}-el
 Summary:        Elisp source files for git version control system support for Emacs
 Group:          Applications/Editors
 BuildArch:      noarch
-Requires:       emacs-git%{?ius_suffix} = %{version}-%{release}
+Requires:       emacs-%{name} = %{version}-%{release}
 Provides:       emacs-git-el = %{version}-%{release}
 Conflicts:      emacs-git-el < %{version}
 Provides:       emacs-git-el%{?ius_suffix} = %{version}-%{release}
 Obsoletes:      emacs-git-el%{?ius_suffix} <= 2.1.3-2.ius
 
-%description -n emacs-git%{?ius_suffix}-el
+%description -n emacs-%{name}-el
 %{summary}.
 
 %prep
 %setup -q -n git-%{version}
 %patch0 -p1
 %patch1 -p1
-#patch4 -p1
 
 %if %{use_prebuilt_docs}
 mkdir -p prebuilt_docs/{html,man}
@@ -368,11 +361,11 @@ USE_LIBPCRE = 1
 ETC_GITCONFIG = %{_sysconfdir}/gitconfig
 DESTDIR = %{buildroot}
 INSTALL = install -p
-GITWEB_PROJECTROOT = %{_var}/lib/git
+GITWEB_PROJECTROOT = %{_localstatedir}/lib/git
 GNU_ROFF = 1
 htmldir = %{_pkgdocdir}
 prefix = %{_prefix}
-gitwebdir = %{_var}/www/git
+gitwebdir = %{_localstatedir}/www/git
 EOF
 
 # Filter bogus perl requires
@@ -453,7 +446,7 @@ rm -f %{buildroot}%{_pkgdocdir}/git-subtree.html
 
 mkdir -p %{buildroot}%{_sysconfdir}/httpd/conf.d
 install -pm 0644 %{SOURCE4} %{buildroot}%{_sysconfdir}/httpd/conf.d/git.conf
-sed "s|@PROJECTROOT@|%{_var}/lib/git|g" \
+sed "s|@PROJECTROOT@|%{_localstatedir}/lib/git|g" \
     %{SOURCE6} > %{buildroot}%{_sysconfdir}/gitweb.conf
 
 find %{buildroot} -type f -name .packlist -exec rm -f {} ';'
@@ -477,7 +470,7 @@ sed -i "/Git\/SVN/ d" perl-git-files
 rm -rf %{buildroot}%{_mandir}
 %endif
 
-mkdir -p %{buildroot}%{_var}/lib/git
+mkdir -p %{buildroot}%{_localstatedir}/lib/git
 %if %{use_systemd}
 mkdir -p %{buildroot}%{_unitdir}
 cp -a %{SOURCE12} %{SOURCE13} %{buildroot}%{_unitdir}
@@ -485,7 +478,7 @@ cp -a %{SOURCE12} %{SOURCE13} %{buildroot}%{_unitdir}
 mkdir -p %{buildroot}%{_sysconfdir}/xinetd.d
 perl -p \
     -e "s|\@GITCOREDIR\@|%{gitcoredir}|g;" \
-    -e "s|\@BASE_PATH\@|%{_var}/lib/git|g;" \
+    -e "s|\@BASE_PATH\@|%{_localstatedir}/lib/git|g;" \
     %{SOURCE3} > %{buildroot}%{_sysconfdir}/xinetd.d/git
 %endif
 
@@ -551,12 +544,11 @@ rm -rf %{buildroot}
 %{_datadir}/git-core/contrib/hooks/setgitperms.perl
 
 %files core -f bin-files-core
-%{!?_licensedir:%global license %%doc}
 %license COPYING
 # exlude is best way here because of troubles with symlinks inside git-core/
 %exclude %{_datadir}/git-core/contrib/hooks/update-paranoid
 %exclude %{_datadir}/git-core/contrib/hooks/setgitperms.perl
-%{bashcompdir}
+%{bashcomproot}
 %{_datadir}/git-core/
 
 %files core-doc -f man-doc-files-core
@@ -618,13 +610,13 @@ rm -rf %{buildroot}
 %files perl-Git-SVN -f perl-git-svn-files
 %{!?_without_docs: %{_mandir}/man3/*Git*SVN*.3pm*}
 
-%files -n emacs-git%{?ius_suffix}
+%files -n emacs-%{name}
 %doc contrib/emacs/README
 %dir %{elispdir}
 %{elispdir}/*.elc
 %{_emacs_sitestartdir}/git-init.el
 
-%files -n emacs-git%{?ius_suffix}-el
+%files -n emacs-%{name}-el
 %{elispdir}/*.el
 
 %files daemon
@@ -636,7 +628,7 @@ rm -rf %{buildroot}
 %config(noreplace)%{_sysconfdir}/xinetd.d/git
 %endif
 %{gitcoredir}/git-daemon
-%{_var}/lib/git
+%{_localstatedir}/lib/git
 %{!?_without_docs: %{_mandir}/man1/*daemon*.1*}
 %{!?_without_docs: %doc Documentation/*daemon*.html}
 
@@ -644,7 +636,7 @@ rm -rf %{buildroot}
 %doc gitweb/INSTALL gitweb/README
 %config(noreplace)%{_sysconfdir}/gitweb.conf
 %config(noreplace)%{_sysconfdir}/httpd/conf.d/git.conf
-%{_var}/www/git/
+%{_localstatedir}/www/git/
 
 
 %files all
@@ -709,10 +701,9 @@ rm -rf %{buildroot}
 
 * Tue Mar 29 2016 Ben Harper <ben.harper@rackspace.com> - 2.8.0-1.ius
 - Latest upstream
-- update bash-completion and %file to align with Fedora
+- update bash-completion and %%file to align with Fedora
   http://pkgs.fedoraproject.org/cgit/rpms/git.git/commit/?id=185b89b8d418351d8d810a4ddc38a70f6ecdcb6c
   http://pkgs.fedoraproject.org/cgit/rpms/git.git/commit/?id=63f895c570bcd06e328d3d4f916cbff4cd00b08e
-
 
 * Thu Mar 17 2016 Carl George <carl.george@rackspace.com> - 2.7.4-1.ius
 - Latest upstream
@@ -1014,7 +1005,7 @@ rm -rf %{buildroot}
 
 * Wed Feb 15 2012 Todd Zullinger <tmz@pobox.com> - 1.7.9.1-1
 - Update to 1.7.9.1
-- Fix EPEL builds (rpm doesn't accept mutiple -f options in %files)
+- Fix EPEL builds (rpm doesn't accept multiple -f options in %%files)
 
 * Fri Feb 10 2012 Petr Pisar <ppisar@redhat.com> - 1.7.9-2
 - Rebuild against PCRE 8.30
