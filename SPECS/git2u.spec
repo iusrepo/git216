@@ -522,8 +522,8 @@ find contrib -type f | xargs chmod -x
 
 # Split core files
 not_core_re="git-(add--interactive|am|credential-netrc|difftool|instaweb|relink|request-pull|send-mail|submodule)|gitweb|prepare-commit-msg|pre-rebase"
-grep -vE "$not_core_re|\/man\/" bin-man-doc-files > bin-files-core
-grep -vE "$not_core_re" bin-man-doc-files | grep "\/man\/" > man-doc-files-core
+grep -vE "$not_core_re|%{_mandir}" bin-man-doc-files > bin-files-core
+grep -vE "$not_core_re" bin-man-doc-files | grep "%{_mandir}" > man-doc-files-core
 grep -E "$not_core_re" bin-man-doc-files > bin-man-doc-git-files
 
 %check
@@ -653,6 +653,7 @@ rm -rf %{buildroot}
 - Clean up sources to better align with Fedora
 - Remove unnecessary rsync requirement from git-core (Fedora)
 - Run git test suite (Fedora)
+- Use %%{_mandir} in git/git-core file list filters (Fedora)
 
 * Tue Mar 21 2017 Ben Harper <ben.harper@rackspace.com> - 2.12.1-1.ius
 - Latest upstream
