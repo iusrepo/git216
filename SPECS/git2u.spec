@@ -33,17 +33,19 @@ Release:        1.ius%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
 Group:          Development/Tools
-URL:            http://git-scm.com/
-Source0:        http://www.kernel.org/pub/software/scm/git/git-%{version}.tar.gz
-Source2:        git-init.el
-Source3:        git.xinetd.in
-Source4:        git.conf.httpd
-Source5:        git-gui.desktop
-Source6:        gitweb.conf.in
-Source10:       http://www.kernel.org/pub/software/scm/git/git-manpages-%{version}.tar.gz
-Source11:       http://www.kernel.org/pub/software/scm/git/git-htmldocs-%{version}.tar.gz
-Source12:       git@.service
-Source13:       git.socket
+URL:            https://git-scm.com
+Source0:        https://www.kernel.org/pub/software/scm/git/git-%{version}.tar.xz
+Source1:        https://www.kernel.org/pub/software/scm/git/git-htmldocs-%{version}.tar.xz
+Source2:        https://www.kernel.org/pub/software/scm/git/git-manpages-%{version}.tar.xz
+
+# Local sources begin at 10 to allow for additional future upstream sources
+Source10:       git-init.el
+Source11:       git.xinetd.in
+Source12:       git.conf.httpd
+Source13:       git-gui.desktop
+Source14:       gitweb.conf.in
+Source15:       git@.service
+Source16:       git.socket
 Patch0:         git-1.8-gitweb-home-link.patch
 # https://bugzilla.redhat.com/490602
 Patch1:         git-cvsimport-Ignore-cvsps-2.2b1-Branches-output.patch
@@ -342,8 +344,8 @@ Obsoletes:      emacs-git-el%{?ius_suffix} <= 2.1.3-2.ius
 
 %if %{use_prebuilt_docs}
 mkdir -p prebuilt_docs/{html,man}
-tar xf %{SOURCE10} -C prebuilt_docs/man
-tar xf %{SOURCE11} -C prebuilt_docs/html
+xz -dc %{SOURCE1} | tar xf - -C prebuilt_docs/html
+xz -dc %{SOURCE2} | tar xf - -C prebuilt_docs/man
 # Remove non-html files
 find prebuilt_docs/html -type f ! -name '*.html' | xargs rm
 find prebuilt_docs/html -type d | xargs rmdir --ignore-fail-on-non-empty
@@ -424,7 +426,7 @@ for elc in %{buildroot}%{elispdir}/*.elc ; do
     install -pm 644 contrib/emacs/$(basename $elc .elc).el \
     %{buildroot}%{elispdir}
 done
-install -Dpm 644 %{SOURCE2} \
+install -Dpm 644 %{SOURCE10} \
     %{buildroot}%{_emacs_sitestartdir}/git-init.el
 
 %if %{gnome_keyring}
@@ -445,9 +447,9 @@ make -C contrib/subtree install-doc
 rm -f %{buildroot}%{_pkgdocdir}/git-subtree.html
 
 mkdir -p %{buildroot}%{_sysconfdir}/httpd/conf.d
-install -pm 0644 %{SOURCE4} %{buildroot}%{_sysconfdir}/httpd/conf.d/git.conf
+install -pm 0644 %{SOURCE12} %{buildroot}%{_sysconfdir}/httpd/conf.d/git.conf
 sed "s|@PROJECTROOT@|%{_localstatedir}/lib/git|g" \
-    %{SOURCE6} > %{buildroot}%{_sysconfdir}/gitweb.conf
+    %{SOURCE14} > %{buildroot}%{_sysconfdir}/gitweb.conf
 
 find %{buildroot} -type f -name .packlist -exec rm -f {} ';'
 find %{buildroot} -type f -name '*.bs' -empty -exec rm -f {} ';'
@@ -473,13 +475,13 @@ rm -rf %{buildroot}%{_mandir}
 mkdir -p %{buildroot}%{_localstatedir}/lib/git
 %if %{use_systemd}
 mkdir -p %{buildroot}%{_unitdir}
-cp -a %{SOURCE12} %{SOURCE13} %{buildroot}%{_unitdir}
+cp -a %{SOURCE15} %{SOURCE16} %{buildroot}%{_unitdir}
 %else
 mkdir -p %{buildroot}%{_sysconfdir}/xinetd.d
 perl -p \
     -e "s|\@GITCOREDIR\@|%{gitcoredir}|g;" \
     -e "s|\@BASE_PATH\@|%{_localstatedir}/lib/git|g;" \
-    %{SOURCE3} > %{buildroot}%{_sysconfdir}/xinetd.d/git
+    %{SOURCE11} > %{buildroot}%{_sysconfdir}/xinetd.d/git
 %endif
 
 # Setup bash completion
@@ -506,7 +508,7 @@ install -pm 644 contrib/completion/git-prompt.sh \
 
 # install git-gui .desktop file
 desktop-file-install \
-  --dir=%{buildroot}%{_datadir}/applications %{SOURCE5}
+  --dir=%{buildroot}%{_datadir}/applications %{SOURCE13}
 
 # find translations
 %find_lang git git.lang
@@ -646,6 +648,7 @@ rm -rf %{buildroot}
 * Tue Apr 04 2017 Carl George <carl.george@rackspace.com> - 2.12.2-1.ius
 - Latest upstream
 - Remove EL5 support
+- Clean up sources to better align with Fedora
 
 * Tue Mar 21 2017 Ben Harper <ben.harper@rackspace.com> - 2.12.1-1.ius
 - Latest upstream
