@@ -454,6 +454,12 @@ find %{buildroot} -type f -name .packlist -exec rm -f {} ';'
 find %{buildroot} -type f -name '*.bs' -empty -exec rm -f {} ';'
 find %{buildroot} -type f -name perllocal.pod -exec rm -f {} ';'
 
+# Clean up contrib/credential to avoid cruft in the git-core-doc docdir
+rm -rf contrib/credential
+
+# Clean up contrib/subtree to avoid cruft in the git-core-doc docdir
+rm -rf contrib/subtree/{INSTALL,Makefile,git-subtree{,.{1,sh,txt,xml}},t}
+
 # git-archimport is not supported
 find %{buildroot} Documentation -type f -name 'git-archimport*' -exec rm -f {} ';'
 
@@ -654,6 +660,7 @@ rm -rf %{buildroot}
 - Remove unnecessary rsync requirement from git-core (Fedora)
 - Run git test suite (Fedora)
 - Use %%{_mandir} in git/git-core file list filters (Fedora)
+- Clean up contrib/{credential,subtree} to avoid cruft in git-core-doc (Fedora)
 
 * Tue Mar 21 2017 Ben Harper <ben.harper@rackspace.com> - 2.12.1-1.ius
 - Latest upstream
