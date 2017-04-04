@@ -8,14 +8,14 @@
 %global bashcomp_pkgconfig  1
 %global bashcompdir %(pkg-config --variable=completionsdir bash-completion 2>/dev/null)
 %global bashcomproot %(dirname %{bashcompdir} 2>/dev/null)
-%global gnome_keyring       1
+%global libsecret           1
 %global use_new_rpm_filters 1
 %global use_systemd         1
 %else
 %global bashcomp_pkgconfig  0
 %global bashcompdir %{_sysconfdir}/bash_completion.d
 %global bashcomproot %{bashcompdir}
-%global gnome_keyring       0
+%global libsecret           0
 %global use_new_rpm_filters 0
 %global use_systemd         0
 %endif
@@ -59,8 +59,8 @@ BuildRequires:  emacs
 BuildRequires:  expat-devel
 BuildRequires:  gettext
 BuildRequires:  libcurl-devel
-%if %{gnome_keyring}
-BuildRequires:  libgnome-keyring-devel
+%if %{libsecret}
+BuildRequires:  libsecret-devel
 %endif
 BuildRequires:  pcre-devel
 BuildRequires:  perl(Test)
@@ -398,8 +398,8 @@ make %{?_smp_mflags} doc
 
 make -C contrib/emacs
 
-%if %{gnome_keyring}
-make -C contrib/credential/gnome-keyring/
+%if %{libsecret}
+make -C contrib/credential/libsecret/
 %endif
 make -C contrib/credential/netrc/
 
@@ -428,11 +428,11 @@ done
 install -Dpm 644 %{SOURCE10} \
     %{buildroot}%{_emacs_sitestartdir}/git-init.el
 
-%if %{gnome_keyring}
-install -pm 755 contrib/credential/gnome-keyring/git-credential-gnome-keyring \
+%if %{libsecret}
+install -pm 755 contrib/credential/libsecret/git-credential-libsecret \
     %{buildroot}%{gitcoredir}
 # Remove built binary files, otherwise they will be installed in doc
-make -C contrib/credential/gnome-keyring/ clean
+make -C contrib/credential/libsecret/ clean
 %endif
 install -pm 755 contrib/credential/netrc/git-credential-netrc \
     %{buildroot}%{gitcoredir}
@@ -527,7 +527,7 @@ chmod a-x Documentation/technical/api-index.sh
 find contrib -type f | xargs chmod -x
 
 # Split core files
-not_core_re="git-(add--interactive|am|credential-netrc|difftool|instaweb|relink|request-pull|send-mail|submodule)|gitweb|prepare-commit-msg|pre-rebase"
+not_core_re="git-(add--interactive|am|credential-(libsecret|netrc)|difftool|instaweb|relink|request-pull|send-mail|submodule)|gitweb|prepare-commit-msg|pre-rebase"
 grep -vE "$not_core_re|%{_mandir}" bin-man-doc-files > bin-files-core
 grep -vE "$not_core_re" bin-man-doc-files | grep "%{_mandir}" > man-doc-files-core
 grep -E "$not_core_re" bin-man-doc-files > bin-man-doc-git-files
@@ -661,6 +661,7 @@ rm -rf %{buildroot}
 - Run git test suite (Fedora)
 - Use %%{_mandir} in git/git-core file list filters (Fedora)
 - Clean up contrib/{credential,subtree} to avoid cruft in git-core-doc (Fedora)
+- Switch from gnome-keyring to libsecret credential helper
 
 * Tue Mar 21 2017 Ben Harper <ben.harper@rackspace.com> - 2.12.1-1.ius
 - Latest upstream
