@@ -28,7 +28,7 @@
 %global ius_suffix 2u
 
 Name:           git%{?ius_suffix}
-Version:        2.12.2
+Version:        2.13.0
 Release:        1.ius%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
@@ -653,6 +653,9 @@ rm -rf %{buildroot}
 # No files for you!
 
 %changelog
+* Wed May 10 2017 Ben Harper <ben.harper@rackspace.com> - 2.13.1-1.ius
+- Latest upstream
+
 * Tue Apr 04 2017 Carl George <carl.george@rackspace.com> - 2.12.2-1.ius
 - Latest upstream
 - Remove EL5 support
