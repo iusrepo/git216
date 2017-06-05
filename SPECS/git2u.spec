@@ -28,7 +28,7 @@
 %global ius_suffix 2u
 
 Name:           git%{?ius_suffix}
-Version:        2.13.0
+Version:        2.13.1
 Release:        1.ius%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
@@ -356,7 +356,6 @@ cat << \EOF > config.mak
 V = 1
 CFLAGS = %{optflags}
 LDFLAGS = %{__global_ldflags}
-BLK_SHA1 = 1
 NEEDS_CRYPTO_WITH_SSL = 1
 USE_LIBPCRE = 1
 ETC_GITCONFIG = %{_sysconfdir}/gitconfig
@@ -653,6 +652,11 @@ rm -rf %{buildroot}
 # No files for you!
 
 %changelog
+* Mon Jun 05 2017 Ben Harper <ben.harper@rackspace.com> - 2.13.1-1.ius
+- Latest upstream
+- remove BLK_SHA1 option, from Fedora see:
+  http://pkgs.fedoraproject.org/cgit/rpms/git.git/commit/?id=e15c234c87b84d0cab29f62a40c8c3efc401aae8
+
 * Wed May 10 2017 Ben Harper <ben.harper@rackspace.com> - 2.13.1-1.ius
 - Latest upstream
 
