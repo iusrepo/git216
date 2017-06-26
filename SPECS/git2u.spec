@@ -28,7 +28,7 @@
 %global ius_suffix 2u
 
 Name:           git%{?ius_suffix}
-Version:        2.13.1
+Version:        2.13.2
 Release:        1.ius%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
@@ -652,6 +652,9 @@ rm -rf %{buildroot}
 # No files for you!
 
 %changelog
+* Mon Jun 26 2017 Carl George <carl.george@rackspace.com> - 2.13.2-1.ius
+- Latest upstream
+
 * Mon Jun 05 2017 Ben Harper <ben.harper@rackspace.com> - 2.13.1-1.ius
 - Latest upstream
 - remove BLK_SHA1 option, from Fedora see:
