@@ -4,7 +4,7 @@
 %global use_prebuilt_docs   0
 
 # Settings for F-19+ and EL-7+
-%if 0%{?fedora} >= 19 || 0%{?rhel} >= 7
+%if 0%{?fedora} || 0%{?rhel} >= 7
 %global bashcomp_pkgconfig  1
 %global bashcompdir %(pkg-config --variable=completionsdir bash-completion 2>/dev/null)
 %global bashcomproot %(dirname %{bashcompdir} 2>/dev/null)
@@ -28,15 +28,13 @@
 %global ius_suffix 2u
 
 Name:           git%{?ius_suffix}
-Version:        2.13.3
+Version:        2.13.4
 Release:        1.ius%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
 Group:          Development/Tools
 URL:            https://git-scm.com
 Source0:        https://www.kernel.org/pub/software/scm/git/git-%{version}.tar.xz
-Source1:        https://www.kernel.org/pub/software/scm/git/git-htmldocs-%{version}.tar.xz
-Source2:        https://www.kernel.org/pub/software/scm/git/git-manpages-%{version}.tar.xz
 
 # Local sources begin at 10 to allow for additional future upstream sources
 Source10:       git-init.el
@@ -50,7 +48,7 @@ Patch0:         git-1.8-gitweb-home-link.patch
 # https://bugzilla.redhat.com/490602
 Patch1:         git-cvsimport-Ignore-cvsps-2.2b1-Branches-output.patch
 
-%if ! %{use_prebuilt_docs} && ! 0%{?_without_docs}
+%if ! 0%{?_without_docs}
 BuildRequires:  asciidoc >= 8.4.1
 BuildRequires:  xmlto
 %endif
@@ -341,15 +339,6 @@ Obsoletes:      emacs-git-el%{?ius_suffix} <= 2.1.3-2.ius
 %patch0 -p1
 %patch1 -p1
 
-%if %{use_prebuilt_docs}
-mkdir -p prebuilt_docs/{html,man}
-xz -dc %{SOURCE1} | tar xf - -C prebuilt_docs/html
-xz -dc %{SOURCE2} | tar xf - -C prebuilt_docs/man
-# Remove non-html files
-find prebuilt_docs/html -type f ! -name '*.html' | xargs rm
-find prebuilt_docs/html -type d | xargs rmdir --ignore-fail-on-non-empty
-%endif
-
 # Use these same options for every invocation of 'make'.
 # Otherwise it will rebuild in %%install due to flags changes.
 cat << \EOF > config.mak
@@ -391,7 +380,7 @@ chmod +x %{__perl_requires}
 
 %build
 make %{?_smp_mflags} all
-%if ! %{use_prebuilt_docs} && ! 0%{?_without_docs}
+%if ! 0%{?_without_docs}
 make %{?_smp_mflags} doc
 %endif
 
@@ -652,6 +641,11 @@ rm -rf %{buildroot}
 # No files for you!
 
 %changelog
+* Wed Aug 02 2017 Ben Harper <ben.harper@rackspace.com> - 2.13.4-1.ius
+- Latest upstream
+- drop old OS conditionals and prebuilt documentation for EL5 from Fedora see:
+  http://pkgs.fedoraproject.org/cgit/rpms/git.git/commit/?id=903d8f35ed8ae16bece8ae8033f3d3926cc97595
+
 * Thu Jul 13 2017 Ben Harper <ben.harper@rackspace.com> - 2.13.3-1.ius
 - Latest upstream
 
