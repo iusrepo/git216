@@ -28,7 +28,7 @@
 %global ius_suffix 2u
 
 Name:           git%{?ius_suffix}
-Version:        2.13.4
+Version:        2.14.0
 Release:        1.ius%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
@@ -641,6 +641,9 @@ rm -rf %{buildroot}
 # No files for you!
 
 %changelog
+* Fri Aug 04 2017 Ben Harper <ben.harper@rackspace.com> - 2.14.0-1.ius
+- Latest upstream
+
 * Wed Aug 02 2017 Ben Harper <ben.harper@rackspace.com> - 2.13.4-1.ius
 - Latest upstream
 - drop old OS conditionals and prebuilt documentation for EL5 from Fedora see:
