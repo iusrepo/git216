@@ -119,9 +119,8 @@ Requires:       %{name}-perl-Git = %{version}-%{release}
 Requires:       perl(Term::ReadKey)
 %endif
 Requires:       emacs-%{name} = %{version}-%{release}
-Conflicts:      git-all < %{version}
 Provides:       git-all = %{version}-%{release} 
-#Obsoletes:      git <= 1.5.4.3
+Conflicts:      git-all < %{version}
 
 %description all
 Git is a fast, scalable, distributed revision control system with an
@@ -137,6 +136,7 @@ Requires:       less
 Requires:       openssh-clients
 Requires:       zlib >= 1.2
 Provides:       git-core = %{version}-%{release}
+Provides:       git-core%{?_isa} = %{version}-%{release}
 Conflicts:      git-core < %{version}
 
 %description core
@@ -173,7 +173,6 @@ Requires:       xinetd
 %endif
 Provides:       git-daemon = %{version}-%{release}
 Provides:       git-daemon%{?_isa} = %{version}-%{release}
-Provides:       config(git-daemon) = %{version}-%{release}
 Conflicts:      git-daemon < %{version}
 
 %description daemon
@@ -185,7 +184,6 @@ Group:          Development/Tools
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
 Provides:       gitweb = %{version}-%{release}
-Provides:       config(gitweb) = %{version}-%{release}
 Conflicts:      gitweb < %{version}
 # rename from gitweb2u to git2u-gitweb
 Provides:       gitweb%{?ius_suffix} = %{version}-%{release}
@@ -328,6 +326,7 @@ BuildArch:      noarch
 Requires:       emacs-%{name} = %{version}-%{release}
 Provides:       emacs-git-el = %{version}-%{release}
 Conflicts:      emacs-git-el < %{version}
+# rename from emacs-git-el2u to emacs-git2u-el
 Provides:       emacs-git-el%{?ius_suffix} = %{version}-%{release}
 Obsoletes:      emacs-git-el%{?ius_suffix} <= 2.1.3-2.ius
 
@@ -370,8 +369,7 @@ EOF
 cat << \EOF > %{name}-req
 #!/bin/sh
 %{__perl_requires} $* |\
-sed \
-    -e '/perl(packed-refs)/d'
+sed -e '/perl(packed-refs)/d'
 EOF
 
 %global __perl_requires %{_builddir}/git-%{version}/%{name}-req
