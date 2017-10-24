@@ -196,7 +196,7 @@ Simple web interface to track changes in git repositories
 Summary:        Git tools for working with Perforce depots
 Group:          Development/Tools
 BuildArch:      noarch
-BuildRequires:  python
+BuildRequires:  python2-devel
 Requires:       %{name} = %{version}-%{release}
 Provides:       git-p4 = %{version}-%{release}
 Conflicts:      git-p4 < %{version}
@@ -423,6 +423,11 @@ make -C contrib/credential/libsecret/ clean
 install -pm 755 contrib/credential/netrc/git-credential-netrc \
     %{buildroot}%{gitcoredir}
 
+# Replace shebang in git-p4.  Setting PYTHON_PATH = %{__python2} in config.mak
+# should be the way to do this, but that causes the python-based remote svn
+# tests in t9020 to fail.
+sed -i -e '1s|#!.*python|#!%{__python2}|' %{buildroot}%{gitcoredir}/git-p4
+
 make -C contrib/subtree install
 %if ! %{use_prebuilt_docs}
 make -C contrib/subtree install-doc
@@ -641,6 +646,7 @@ rm -rf %{buildroot}
 %changelog
 * Tue Oct 24 2017 Carl George <carl@george.computer> - 2.14.3-1.ius
 - Latest upstream
+- Merge Fedora fixes to clean up p4 Python dependency
 
 * Tue Sep 26 2017 Ben Harper <ben.harper@rackspace.com> - 2.14.2-1.ius
 - Latest upstream
