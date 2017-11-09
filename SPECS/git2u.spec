@@ -28,7 +28,7 @@
 %global ius_suffix 2u
 
 Name:           git%{?ius_suffix}
-Version:        2.14.3
+Version:        2.15.0
 Release:        1.ius%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
@@ -644,6 +644,9 @@ rm -rf %{buildroot}
 # No files for you!
 
 %changelog
+* Fri Nov 03 2017 Ben Harper <ben.harper@rackspace.com> - 2.15.0-1.ius
+- Latest upstream
+
 * Tue Oct 24 2017 Carl George <carl@george.computer> - 2.14.3-1.ius
 - Latest upstream
 - Merge Fedora fixes to clean up p4 Python dependency
