@@ -1,6 +1,6 @@
 # Pass --without docs to rpmbuild if you don't want the documentation
 
-%global gitcoredir          %{_libexecdir}/git-core
+%global gitexecdir          %{_libexecdir}/git-core
 %global use_prebuilt_docs   0
 
 # Settings for F-19+ and EL-7+
@@ -25,10 +25,23 @@
 %{!?__global_ldflags: %global __global_ldflags -Wl,-z,relro}
 %endif
 
+# Allow tests to run in parallel.  Disabled by default due to unresolved
+# failures when building in koji.  Enabling it speeds up the test suite quite a
+# bit though.  The -O (--output-sync) option requires make > 4.0, which is not
+# available on EL <= 7.  Without it, running the tests in parallel causes the
+# output to be rather unweildy, so restrict parallel tests to Fedora.
+#
+# Pass "--with parallel_tests" or "--define 'parallel_tests 1'" to
+# rpmbuild/mock.
+%bcond_with parallel_tests
+%if %{with parallel_tests} && 0%{?fedora}
+%global make_test_opts -O %{?_smp_mflags}
+%endif
+
 %global ius_suffix 2u
 
 Name:           git%{?ius_suffix}
-Version:        2.15.0
+Version:        2.15.1
 Release:        1.ius%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
@@ -48,6 +61,10 @@ Patch0:         git-1.8-gitweb-home-link.patch
 # https://bugzilla.redhat.com/490602
 Patch1:         git-cvsimport-Ignore-cvsps-2.2b1-Branches-output.patch
 
+# https://bugzilla.redhat.com/1510455 (CVE-2017-15298)
+# https://github.com/git/git/commit/a937b37e76
+Patch2:         0001-revision-quit-pruning-diff-more-quickly-when-possibl.patch
+
 %if ! 0%{?_without_docs}
 BuildRequires:  asciidoc >= 8.4.1
 BuildRequires:  xmlto
@@ -64,6 +81,8 @@ BuildRequires:  pcre-devel
 BuildRequires:  perl(Test)
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel >= 1.2
+BuildRequires:  tcl
+BuildRequires:  tk
 %if %{bashcomp_pkgconfig}
 BuildRequires:  pkgconfig(bash-completion)
 %endif
@@ -71,6 +90,36 @@ BuildRequires:  pkgconfig(bash-completion)
 # For macros
 BuildRequires:  systemd
 %endif
+
+# Test suite requirements
+%if 0%{?fedora} && 0%{?fedora} >= 27
+# Needed by t5540-http-push-webdav.sh
+BuildRequires: apr-util-bdb
+%endif
+BuildRequires:  cvs
+BuildRequires:  cvsps
+BuildRequires:  gnupg
+%if 0%{?fedora} || ( 0%{?rhel} && 0%{?rhel} == 7 && %{_arch} != ppc64 )
+BuildRequires:  highlight
+%endif
+BuildRequires:  httpd
+%if 0%{?fedora}
+BuildRequires:  jgit
+%endif
+BuildRequires:  pcre
+BuildRequires:  perl(CGI)
+BuildRequires:  perl(CGI::Carp)
+BuildRequires:  perl(CGI::Util)
+BuildRequires:  perl(DBD::SQLite)
+BuildRequires:  perl(Digest::MD5)
+BuildRequires:  perl(IO::Pty)
+BuildRequires:  perl(Mail::Address)
+BuildRequires:  perl(Memoize)
+BuildRequires:  perl(Test::More)
+BuildRequires:  perl(Time::HiRes)
+BuildRequires:  subversion
+BuildRequires:  subversion-perl
+BuildRequires:  time
 
 Requires:       %{name}-core = %{version}-%{release}
 Requires:       %{name}-core-doc = %{version}-%{release}
@@ -190,7 +239,7 @@ Provides:       gitweb%{?ius_suffix} = %{version}-%{release}
 Obsoletes:      gitweb%{?ius_suffix} <= 2.6.4-2.ius
 
 %description gitweb
-Simple web interface to track changes in git repositories
+%{summary}.
 
 %package p4
 Summary:        Git tools for working with Perforce depots
@@ -217,7 +266,7 @@ Provides:       git-svn%{?_isa} = %{version}-%{release}
 Conflicts:      git-svn < %{version}
 
 %description svn
-Git tools for importing Subversion repositories.
+%{summary}.
 
 %package cvs
 Summary:        Git tools for importing CVS repositories
@@ -230,7 +279,7 @@ Provides:       git-cvs = %{version}-%{release}
 Conflicts:      git-cvs < %{version}
 
 %description cvs
-Git tools for importing CVS repositories.
+%{summary}.
 
 %package email
 Summary:        Git tools for sending email
@@ -247,7 +296,7 @@ Conflicts:      git-email < %{version}
 Git tools for sending email.
 
 %package gui
-Summary:        Git GUI tool
+Summary:        Graphical interface to Git
 Group:          Development/Tools
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}, tk >= 8.4
@@ -256,10 +305,10 @@ Provides:       git-gui = %{version}-%{release}
 Conflicts:      git-gui < %{version}
 
 %description gui
-Git GUI tool.
+%{summary}.
 
 %package gitk
-Summary:        Git revision tree visualiser
+Summary:        Git repository browser
 Group:          Development/Tools
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}, tk >= 8.4
@@ -270,7 +319,7 @@ Provides:       gitk%{?ius_suffix} = %{version}-%{release}
 Obsoletes:      gitk%{?ius_suffix} <= 2.6.4-2.ius
 
 %description gitk
-Git revision tree visualiser.
+%{summary}.
 
 %package perl-Git
 Summary:        Perl interface to Git
@@ -287,7 +336,7 @@ Provides:       perl-Git%{?ius_suffix} = %{version}-%{release}
 Obsoletes:      perl-Git%{?ius_suffix} <= 2.6.4-2.ius
 
 %description perl-Git
-Perl interface to Git.
+%{summary}.
 
 %package perl-Git-SVN
 Summary:        Perl interface to Git::SVN
@@ -337,6 +386,8 @@ Obsoletes:      emacs-git-el%{?ius_suffix} <= 2.1.3-2.ius
 %setup -q -n git-%{version}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
+
 
 # Use these same options for every invocation of 'make'.
 # Otherwise it will rebuild in %%install due to flags changes.
@@ -351,6 +402,8 @@ DESTDIR = %{buildroot}
 INSTALL = install -p
 GITWEB_PROJECTROOT = %{_localstatedir}/lib/git
 GNU_ROFF = 1
+NO_CROSS_DIRECTORY_HARDLINKS = 1
+PYTHON_PATH = %{__python2}
 htmldir = %{_pkgdocdir}
 prefix = %{_prefix}
 gitwebdir = %{_localstatedir}/www/git
@@ -358,7 +411,6 @@ EOF
 
 # Filter bogus perl requires
 # packed-refs comes from a comment in contrib/hooks/update-paranoid
-# YAML::Any is optional and not available on el5
 %if %{use_new_rpm_filters}
 %{?perl_default_filter}
 %global __requires_exclude %{?__requires_exclude:%__requires_exclude|}perl\\(packed-refs\\)
@@ -391,8 +443,14 @@ make -C contrib/credential/netrc/
 
 make -C contrib/subtree/
 
-# Remove shebang from bash-completion script
-sed -i '/^#!bash/,+1 d' contrib/completion/git-completion.bash
+# Fix shebang in a few places to silence rpmlint complaints
+sed -i -e '1s|#! */usr/bin/env python$|#!%{__python2}|' \
+    contrib/fast-import/import-zips.py \
+    contrib/hg-to-git/hg-to-git.py \
+    contrib/hooks/multimail/git_multimail.py \
+    contrib/hooks/multimail/migrate-mailhook-config \
+    contrib/hooks/multimail/post-receive.example \
+    contrib/svn-fe/svnrdump_sim.py
 
 %install
 rm -rf %{buildroot}
@@ -416,17 +474,12 @@ install -Dpm 644 %{SOURCE10} \
 
 %if %{libsecret}
 install -pm 755 contrib/credential/libsecret/git-credential-libsecret \
-    %{buildroot}%{gitcoredir}
+    %{buildroot}%{gitexecdir}
 # Remove built binary files, otherwise they will be installed in doc
 make -C contrib/credential/libsecret/ clean
 %endif
 install -pm 755 contrib/credential/netrc/git-credential-netrc \
-    %{buildroot}%{gitcoredir}
-
-# Replace shebang in git-p4.  Setting PYTHON_PATH = %{__python2} in config.mak
-# should be the way to do this, but that causes the python-based remote svn
-# tests in t9020 to fail.
-sed -i -e '1s|#!.*python|#!%{__python2}|' %{buildroot}%{gitcoredir}/git-p4
+    %{buildroot}%{gitexecdir}
 
 make -C contrib/subtree install
 %if ! %{use_prebuilt_docs}
@@ -475,7 +528,7 @@ cp -a %{SOURCE15} %{SOURCE16} %{buildroot}%{_unitdir}
 %else
 mkdir -p %{buildroot}%{_sysconfdir}/xinetd.d
 perl -p \
-    -e "s|\@GITCOREDIR\@|%{gitcoredir}|g;" \
+    -e "s|\@GITEXECDIR\@|%{gitexecdir}|g;" \
     -e "s|\@BASE_PATH\@|%{_localstatedir}/lib/git|g;" \
     %{SOURCE11} > %{buildroot}%{_sysconfdir}/xinetd.d/git
 %endif
@@ -518,13 +571,28 @@ chmod a-x Documentation/technical/api-index.sh
 find contrib -type f | xargs chmod -x
 
 # Split core files
-not_core_re="git-(add--interactive|am|credential-(libsecret|netrc)|difftool|instaweb|relink|request-pull|send-mail|submodule)|gitweb|prepare-commit-msg|pre-rebase"
+not_core_re="git-(add--interactive|credential-(libsecret|netrc)|difftool|filter-branch|instaweb|request-pull|send-mail)|gitweb"
 grep -vE "$not_core_re|%{_mandir}" bin-man-doc-files > bin-files-core
 grep -vE "$not_core_re" bin-man-doc-files | grep "%{_mandir}" > man-doc-files-core
 grep -E "$not_core_re" bin-man-doc-files > bin-man-doc-git-files
 
 %check
-make test
+
+# Tests to skip on all releases and architectures
+# t9128-git-svn-cmd-branch - "branch tests" fails randomnly
+# t9167-git-svn-cmd-branch-subproject - "branch tests" fails randomnly
+GIT_SKIP_TESTS="t9128.3 t9167.3"
+
+export GIT_SKIP_TESTS
+
+# Set LANG so various UTF-8 tests are run
+export LANG=en_US.UTF-8
+
+# Set SVNSERVE_PORT to run svnserve tests
+export SVNSERVE_PORT=%(shuf -i 9000-9999 -n 1)
+
+# Run the tests
+make %{?make_test_opts} test
 
 %clean
 rm -rf %{buildroot}
@@ -543,12 +611,16 @@ rm -rf %{buildroot}
 %files -f bin-man-doc-git-files
 %{_datadir}/git-core/contrib/hooks/update-paranoid
 %{_datadir}/git-core/contrib/hooks/setgitperms.perl
+%{_datadir}/git-core/templates/hooks/pre-rebase.sample
+%{_datadir}/git-core/templates/hooks/prepare-commit-msg.sample
 
 %files core -f bin-files-core
 %license COPYING
-# exlude is best way here because of troubles with symlinks inside git-core/
+# exclude is best way here because of troubles with symlinks inside git-core/
 %exclude %{_datadir}/git-core/contrib/hooks/update-paranoid
 %exclude %{_datadir}/git-core/contrib/hooks/setgitperms.perl
+%exclude %{_datadir}/git-core/templates/hooks/pre-rebase.sample
+%exclude %{_datadir}/git-core/templates/hooks/prepare-commit-msg.sample
 %{bashcomproot}
 %{_datadir}/git-core/
 
@@ -562,14 +634,14 @@ rm -rf %{buildroot}
 
 
 %files p4
-%{gitcoredir}/*p4*
-%{gitcoredir}/mergetools/p4merge
+%{gitexecdir}/*p4*
+%{gitexecdir}/mergetools/p4merge
 %doc Documentation/*p4*.txt
 %{!?_without_docs: %{_mandir}/man1/*p4*.1*}
 %{!?_without_docs: %doc Documentation/*p4*.html }
 
 %files svn
-%{gitcoredir}/*svn*
+%{gitexecdir}/*svn*
 %doc Documentation/*svn*.txt
 %{!?_without_docs: %{_mandir}/man1/*svn*.1*}
 %{!?_without_docs: %doc Documentation/*svn*.html }
@@ -577,19 +649,19 @@ rm -rf %{buildroot}
 %files cvs
 %doc Documentation/*git-cvs*.txt
 %{_bindir}/git-cvsserver
-%{gitcoredir}/*cvs*
+%{gitexecdir}/*cvs*
 %{!?_without_docs: %{_mandir}/man1/*cvs*.1*}
 %{!?_without_docs: %doc Documentation/*git-cvs*.html }
 
 %files email
 %doc Documentation/*email*.txt
-%{gitcoredir}/*email*
+%{gitexecdir}/*email*
 %{!?_without_docs: %{_mandir}/man1/*email*.1*}
 %{!?_without_docs: %doc Documentation/*email*.html }
 
 %files gui
-%{gitcoredir}/git-gui*
-%{gitcoredir}/git-citool
+%{gitexecdir}/git-gui*
+%{gitexecdir}/git-citool
 %{_datadir}/applications/*git-gui.desktop
 %{_datadir}/git-gui/
 %{!?_without_docs: %{_mandir}/man1/git-gui.1*}
@@ -628,7 +700,7 @@ rm -rf %{buildroot}
 %else
 %config(noreplace)%{_sysconfdir}/xinetd.d/git
 %endif
-%{gitcoredir}/git-daemon
+%{gitexecdir}/git-daemon
 %{_localstatedir}/lib/git
 %{!?_without_docs: %{_mandir}/man1/*daemon*.1*}
 %{!?_without_docs: %doc Documentation/*daemon*.html}
@@ -644,6 +716,33 @@ rm -rf %{buildroot}
 # No files for you!
 
 %changelog
+* Wed Nov 29 2017 Ben Harper <ben.harper@rackspace.com> - 2.15.1-1.ius
+- Latest upstream
+- add Patch2 from:
+  https://src.fedoraproject.org/rpms/git/c/7dbcd332fcc00efc962aea20d93c27f73466c4aa
+- Disable cross-directory hardlinks from:
+  https://src.fedoraproject.org/rpms/git/c/6ef5f1f7232aa68a28afd0481aa90d1960ec086b
+- Update summary/description of numerous subpackages from:
+  https://src.fedoraproject.org/rpms/git/c/382ccf9f8c3b4373602751632108b1c90b52d680
+- fix python shebang from:
+  https://src.fedoraproject.org/rpms/git/c/71cf98e0822f04d14702c25801b1538d6816b07e
+- set PYTHON_PATH to ensure correct version of python for testing from:
+  https://src.fedoraproject.org/rpms/git/c/d24b9418f8487fa939d5b7bd75b0ba398510e63d
+- Rename %%gitcoredir to %%gitexecdir; upstream uses the latter from:
+  https://src.fedoraproject.org/rpms/git/c/054dd6179a150413858b4c3c00983a6e51beed1b
+- move commands in and out of core depending on need of perl from:
+  https://src.fedoraproject.org/rpms/git/c/cb7fab7e6ca421bc486147273f9804919b1f5046
+  https://src.fedoraproject.org/rpms/git/c/339c6b6d5c0ed41700a2760deb889ff5b9b6b6ed
+- test suite improvements from:
+  https://src.fedoraproject.org/rpms/git/c/6dc62852839d0dc9b9c510d29c723de35a77911a
+- Remove unneeded cleanup of shebang in bash-completion script from Fedor;
+  https://src.fedoraproject.org/rpms/git/c/2fd0c5cf45ba70eaaf9d93c40ad1742f2af58349
+- remove EL5 stuff from Fedora:
+  https://src.fedoraproject.org/rpms/git/c/99aec7086b0b6f44570a7b803089b19ffcb39748
+- Add tcl/tk BuildRequires from Fedora:
+  https://src.fedoraproject.org/rpms/git/c/08602e223bfdf7d5d5e4899958540bae923d1027
+
+
 * Fri Nov 03 2017 Ben Harper <ben.harper@rackspace.com> - 2.15.0-1.ius
 - Latest upstream
 
