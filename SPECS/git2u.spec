@@ -41,7 +41,7 @@
 %global ius_suffix 2u
 
 Name:           git%{?ius_suffix}
-Version:        2.15.1
+Version:        2.16.1
 Release:        1.ius%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
@@ -55,15 +55,11 @@ Source11:       git.xinetd.in
 Source12:       git.conf.httpd
 Source13:       git-gui.desktop
 Source14:       gitweb.conf.in
-Source15:       git@.service
+Source15:       git@.service.in
 Source16:       git.socket
 Patch0:         git-1.8-gitweb-home-link.patch
 # https://bugzilla.redhat.com/490602
 Patch1:         git-cvsimport-Ignore-cvsps-2.2b1-Branches-output.patch
-
-# https://bugzilla.redhat.com/1510455 (CVE-2017-15298)
-# https://github.com/git/git/commit/a937b37e76
-Patch2:         0001-revision-quit-pruning-diff-more-quickly-when-possibl.patch
 
 %if ! 0%{?_without_docs}
 BuildRequires:  asciidoc >= 8.4.1
@@ -201,6 +197,7 @@ other SCMs, install the git-all meta-package.
 %package core-doc
 Summary:        Documentation files for git-core
 Group:          Development/Tools
+BuildArch:      noarch
 Requires:       %{name}-core = %{version}-%{release}
 Provides:       git-core-doc = %{version}-%{release}
 Conflicts:      git-core-doc < %{version}
@@ -383,11 +380,9 @@ Obsoletes:      emacs-git-el%{?ius_suffix} <= 2.1.3-2.ius
 %{summary}.
 
 %prep
-%setup -q -n git-%{version}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-
+# Ensure a blank line follows autosetup, el6 chokes otherwise
+# https://bugzilla.redhat.com/1310704
+%autosetup -p1 -n git-%{version}
 
 # Use these same options for every invocation of 'make'.
 # Otherwise it will rebuild in %%install due to flags changes.
@@ -523,8 +518,11 @@ rm -rf %{buildroot}%{_mandir}
 
 mkdir -p %{buildroot}%{_localstatedir}/lib/git
 %if %{use_systemd}
-mkdir -p %{buildroot}%{_unitdir}
-cp -a %{SOURCE15} %{SOURCE16} %{buildroot}%{_unitdir}
+install -Dp -m 0644 %{SOURCE16} %{buildroot}%{_unitdir}/git.socket
+perl -p \
+    -e "s|\@GITEXECDIR\@|%{gitexecdir}|g;" \
+    -e "s|\@BASE_PATH\@|%{_localstatedir}/lib/git|g;" \
+    %{SOURCE15} > %{buildroot}%{_unitdir}/git@.service
 %else
 mkdir -p %{buildroot}%{_sysconfdir}/xinetd.d
 perl -p \
@@ -716,6 +714,16 @@ rm -rf %{buildroot}
 # No files for you!
 
 %changelog
+* Wed Jan 24 2018 Ben Harper <ben.harper@rackspace.com> - 2.16.1-1.ius
+- Latest upstream
+- Remove Patch2, fixed upstream
+- Use %%autosetup macro from Ferdora:
+  https://src.fedoraproject.org/rpms/git/c/53fdd5334a2afc8e7c63790e667bbf64cd8049c9
+- git-core-docs package noarch from Fedora:
+  https://src.fedoraproject.org/rpms/git/c/15d075cb09ab8b9b2621a82db9ece8493829b88f
+- update Source15 from Fedora:
+  https://src.fedoraproject.org/rpms/git/c/76ecad7439038ddf93de96c208aa6274e472d07d
+
 * Wed Nov 29 2017 Ben Harper <ben.harper@rackspace.com> - 2.15.1-1.ius
 - Latest upstream
 - add Patch2 from:
