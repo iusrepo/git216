@@ -41,11 +41,10 @@
 %global ius_suffix 2u
 
 Name:           git%{?ius_suffix}
-Version:        2.16.1
+Version:        2.16.2
 Release:        1.ius%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
-Group:          Development/Tools
 URL:            https://git-scm.com
 Source0:        https://www.kernel.org/pub/software/scm/git/git-%{version}.tar.xz
 
@@ -60,6 +59,8 @@ Source16:       git.socket
 Patch0:         git-1.8-gitweb-home-link.patch
 # https://bugzilla.redhat.com/490602
 Patch1:         git-cvsimport-Ignore-cvsps-2.2b1-Branches-output.patch
+# https://public-inbox.org/git/20180129231653.GA22834@starla/
+Patch2:         0001-git-svn-control-destruction-order-to-avoid-segfault.patch
 
 %if ! 0%{?_without_docs}
 BuildRequires:  asciidoc >= 8.4.1
@@ -150,7 +151,6 @@ tools for integrating with other SCMs, install the git-all meta-package.
 
 %package all
 Summary:        Meta-package to pull in all git tools
-Group:          Development/Tools
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
 Requires:       %{name}-cvs = %{version}-%{release}
@@ -158,13 +158,14 @@ Requires:       %{name}-email = %{version}-%{release}
 Requires:       %{name}-gui = %{version}-%{release}
 Requires:       %{name}-svn = %{version}-%{release}
 Requires:       %{name}-p4 = %{version}-%{release}
+Requires:       git-subtree = %{version}-%{release}
 Requires:       %{name}-gitk = %{version}-%{release}
 Requires:       %{name}-perl-Git = %{version}-%{release}
 %if ! %{defined perl_bootstrap}
 Requires:       perl(Term::ReadKey)
 %endif
 Requires:       emacs-%{name} = %{version}-%{release}
-Provides:       git-all = %{version}-%{release} 
+Provides:       git-all = %{version}-%{release}
 Conflicts:      git-all < %{version}
 
 %description all
@@ -176,7 +177,6 @@ This is a dummy package which brings in all subpackages.
 
 %package core
 Summary:        Core package of git with minimal functionality
-Group:          Development/Tools
 Requires:       less
 Requires:       openssh-clients
 Requires:       zlib >= 1.2
@@ -196,7 +196,6 @@ other SCMs, install the git-all meta-package.
 
 %package core-doc
 Summary:        Documentation files for git-core
-Group:          Development/Tools
 BuildArch:      noarch
 Requires:       %{name}-core = %{version}-%{release}
 Provides:       git-core-doc = %{version}-%{release}
@@ -205,9 +204,20 @@ Conflicts:      git-core-doc < %{version}
 %description core-doc
 Documentation files for git-core package including man pages.
 
+%package cvs
+Summary:        Git tools for importing CVS repositories
+BuildArch:      noarch
+Requires:       %{name} = %{version}-%{release}, cvs
+Requires:       cvsps
+Requires:       perl(DBD::SQLite)
+Provides:       git-cvs = %{version}-%{release}
+Conflicts:      git-cvs < %{version}
+
+%description cvs
+%{summary}.
+
 %package daemon
 Summary:        Git protocol daemon
-Group:          Development/Tools
 Requires:       %{name} = %{version}-%{release}
 %if %{use_systemd}
 Requires:       systemd
@@ -224,63 +234,8 @@ Conflicts:      git-daemon < %{version}
 %description daemon
 The git daemon for supporting git:// access to git repositories
 
-%package gitweb
-Summary:        Simple web interface to git repositories
-Group:          Development/Tools
-BuildArch:      noarch
-Requires:       %{name} = %{version}-%{release}
-Provides:       gitweb = %{version}-%{release}
-Conflicts:      gitweb < %{version}
-# rename from gitweb2u to git2u-gitweb
-Provides:       gitweb%{?ius_suffix} = %{version}-%{release}
-Obsoletes:      gitweb%{?ius_suffix} <= 2.6.4-2.ius
-
-%description gitweb
-%{summary}.
-
-%package p4
-Summary:        Git tools for working with Perforce depots
-Group:          Development/Tools
-BuildArch:      noarch
-BuildRequires:  python2-devel
-Requires:       %{name} = %{version}-%{release}
-Provides:       git-p4 = %{version}-%{release}
-Conflicts:      git-p4 < %{version}
-
-%description p4
-%{summary}.
-
-%package svn
-Summary:        Git tools for importing Subversion repositories
-Group:          Development/Tools
-Requires:       %{name} = %{version}-%{release}, subversion
-Requires:       perl(Digest::MD5)
-%if ! %{defined perl_bootstrap}
-Requires:       perl(Term::ReadKey)
-%endif
-Provides:       git-svn = %{version}-%{release}
-Provides:       git-svn%{?_isa} = %{version}-%{release}
-Conflicts:      git-svn < %{version}
-
-%description svn
-%{summary}.
-
-%package cvs
-Summary:        Git tools for importing CVS repositories
-Group:          Development/Tools
-BuildArch:      noarch
-Requires:       %{name} = %{version}-%{release}, cvs
-Requires:       cvsps
-Requires:       perl(DBD::SQLite)
-Provides:       git-cvs = %{version}-%{release}
-Conflicts:      git-cvs < %{version}
-
-%description cvs
-%{summary}.
-
 %package email
 Summary:        Git tools for sending email
-Group:          Development/Tools
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
 Requires:       %{name}-perl-Git = %{version}-%{release}
@@ -292,21 +247,32 @@ Conflicts:      git-email < %{version}
 %description email
 Git tools for sending email.
 
-%package gui
-Summary:        Graphical interface to Git
-Group:          Development/Tools
+%package -n emacs-%{name}
+Summary:        Git version control system support for Emacs
+Requires:       %{name} = %{version}-%{release}
 BuildArch:      noarch
-Requires:       %{name} = %{version}-%{release}, tk >= 8.4
-Requires:       %{name}-gitk = %{version}-%{release}
-Provides:       git-gui = %{version}-%{release}
-Conflicts:      git-gui < %{version}
+Requires:       emacs(bin) >= %{_emacs_version}
+Provides:       emacs-git = %{version}-%{release}
+Conflicts:      emacs-git < %{version}
 
-%description gui
+%description -n emacs-%{name}
+%{summary}.
+
+%package -n emacs-%{name}-el
+Summary:        Elisp source files for git version control system support for Emacs
+BuildArch:      noarch
+Requires:       emacs-%{name} = %{version}-%{release}
+Provides:       emacs-git-el = %{version}-%{release}
+Conflicts:      emacs-git-el < %{version}
+# rename from emacs-git-el2u to emacs-git2u-el
+Provides:       emacs-git-el%{?ius_suffix} = %{version}-%{release}
+Obsoletes:      emacs-git-el%{?ius_suffix} <= 2.1.3-2.ius
+
+%description -n emacs-%{name}-el
 %{summary}.
 
 %package gitk
 Summary:        Git repository browser
-Group:          Development/Tools
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}, tk >= 8.4
 Provides:       gitk = %{version}-%{release}
@@ -318,9 +284,44 @@ Obsoletes:      gitk%{?ius_suffix} <= 2.6.4-2.ius
 %description gitk
 %{summary}.
 
+%package gitweb
+Summary:        Simple web interface to git repositories
+BuildArch:      noarch
+Requires:       %{name} = %{version}-%{release}
+Provides:       gitweb = %{version}-%{release}
+Conflicts:      gitweb < %{version}
+# rename from gitweb2u to git2u-gitweb
+Provides:       gitweb%{?ius_suffix} = %{version}-%{release}
+Obsoletes:      gitweb%{?ius_suffix} <= 2.6.4-2.ius
+
+%description gitweb
+%{summary}.
+
+%package gui
+Summary:        Graphical interface to Git
+BuildArch:      noarch
+Requires:       %{name} = %{version}-%{release}, tk >= 8.4
+Requires:       %{name}-gitk = %{version}-%{release}
+Provides:       git-gui = %{version}-%{release}
+Conflicts:      git-gui < %{version}
+
+%description gui
+%{summary}.
+
+
+%package p4
+Summary:        Git tools for working with Perforce depots
+BuildArch:      noarch
+BuildRequires:  python2-devel
+Requires:       %{name} = %{version}-%{release}
+Provides:       git-p4 = %{version}-%{release}
+Conflicts:      git-p4 < %{version}
+
+%description p4
+%{summary}.
+
 %package perl-Git
 Summary:        Perl interface to Git
-Group:          Development/Libraries
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
 BuildRequires:  perl(Error), perl(ExtUtils::MakeMaker)
@@ -337,7 +338,6 @@ Obsoletes:      perl-Git%{?ius_suffix} <= 2.6.4-2.ius
 
 %package perl-Git-SVN
 Summary:        Perl interface to Git::SVN
-Group:          Development/Libraries
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
 Requires:       perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
@@ -353,30 +353,28 @@ Obsoletes:      perl-Git%{?ius_suffix}-SVN <= 2.6.4-2.ius
 %description perl-Git-SVN
 Perl interface to Git.
 
-%package -n emacs-%{name}
-Summary:        Git version control system support for Emacs
-Group:          Applications/Editors
-Requires:       %{name} = %{version}-%{release}
-BuildArch:      noarch
-Requires:       emacs(bin) >= %{_emacs_version}
-Provides:       emacs-git = %{version}-%{release}
-Conflicts:      emacs-git < %{version}
+%package subtree
+Summary:        Git tools to merge and split repositories
+Requires:       git-core = %{version}-%{release}
+Provides:	git-subtree = %{version}-%{release}
+Conflicts:	git-subtree < %{version}
+%description subtree
+Git subtrees allow subprojects to be included within a subdirectory
+of the main project, optionally including the subproject's entire
+history.
 
-%description -n emacs-%{name}
-%{summary}.
+%package svn
+Summary:        Git tools for importing Subversion repositories
+Requires:       %{name} = %{version}-%{release}, subversion
+Requires:       perl(Digest::MD5)
+%if ! %{defined perl_bootstrap}
+Requires:       perl(Term::ReadKey)
+%endif
+Provides:       git-svn = %{version}-%{release}
+Provides:       git-svn%{?_isa} = %{version}-%{release}
+Conflicts:      git-svn < %{version}
 
-%package -n emacs-%{name}-el
-Summary:        Elisp source files for git version control system support for Emacs
-Group:          Applications/Editors
-BuildArch:      noarch
-Requires:       emacs-%{name} = %{version}-%{release}
-Provides:       emacs-git-el = %{version}-%{release}
-Conflicts:      emacs-git-el < %{version}
-# rename from emacs-git-el2u to emacs-git2u-el
-Provides:       emacs-git-el%{?ius_suffix} = %{version}-%{release}
-Obsoletes:      emacs-git-el%{?ius_suffix} <= 2.1.3-2.ius
-
-%description -n emacs-%{name}-el
+%description svn
 %{summary}.
 
 %prep
@@ -448,7 +446,6 @@ sed -i -e '1s|#! */usr/bin/env python$|#!%{__python2}|' \
     contrib/svn-fe/svnrdump_sim.py
 
 %install
-rm -rf %{buildroot}
 make %{?_smp_mflags} INSTALLDIRS=vendor install
 %if ! %{use_prebuilt_docs} && ! 0%{?_without_docs}
 make %{?_smp_mflags} INSTALLDIRS=vendor install-doc
@@ -480,9 +477,6 @@ make -C contrib/subtree install
 %if ! %{use_prebuilt_docs}
 make -C contrib/subtree install-doc
 %endif
-# it's ugly hack, but this file don't need to be copied to this directory
-# it's already part of git-core-doc and it's alone here
-rm -f %{buildroot}%{_pkgdocdir}/git-subtree.html
 
 mkdir -p %{buildroot}%{_sysconfdir}/httpd/conf.d
 install -pm 0644 %{SOURCE12} %{buildroot}%{_sysconfdir}/httpd/conf.d/git.conf
@@ -497,12 +491,14 @@ find %{buildroot} -type f -name perllocal.pod -exec rm -f {} ';'
 rm -rf contrib/credential
 
 # Clean up contrib/subtree to avoid cruft in the git-core-doc docdir
+# Move git-subtree.txt to Documentation so it can be installed later in docdir
+mv contrib/subtree/git-subtree.txt Documentation/
 rm -rf contrib/subtree/{INSTALL,Makefile,git-subtree{,.{1,sh,txt,xml}},t}
 
 # git-archimport is not supported
 find %{buildroot} Documentation -type f -name 'git-archimport*' -exec rm -f {} ';'
 
-exclude_re="archimport|email|git-citool|git-cvs|git-daemon|git-gui|git-remote-bzr|git-remote-hg|gitk|p4|svn"
+exclude_re="archimport|email|git-citool|git-cvs|git-daemon|git-gui|git-remote-bzr|git-remote-hg|git-subtree|gitk|p4|svn"
 (find %{buildroot}{%{_bindir},%{_libexecdir}} -type f | grep -vE "$exclude_re" | sed -e s@^%{buildroot}@@) > bin-man-doc-files
 (find %{buildroot}{%{_bindir},%{_libexecdir}} -mindepth 1 -type d | grep -vE "$exclude_re" | sed -e 's@^%{buildroot}@%dir @') >> bin-man-doc-files
 (find %{buildroot}%{perl_vendorlib} -type f | sed -e s@^%{buildroot}@@) > perl-git-files
@@ -569,7 +565,7 @@ chmod a-x Documentation/technical/api-index.sh
 find contrib -type f | xargs chmod -x
 
 # Split core files
-not_core_re="git-(add--interactive|credential-(libsecret|netrc)|difftool|filter-branch|instaweb|request-pull|send-mail)|gitweb"
+not_core_re="git-(add--interactive|credential-(libsecret|netrc)|difftool|filter-branch|instaweb|request-pull|send-mail|git-subtree)|gitweb"
 grep -vE "$not_core_re|%{_mandir}" bin-man-doc-files > bin-files-core
 grep -vE "$not_core_re" bin-man-doc-files | grep "%{_mandir}" > man-doc-files-core
 grep -E "$not_core_re" bin-man-doc-files > bin-man-doc-git-files
@@ -577,9 +573,7 @@ grep -E "$not_core_re" bin-man-doc-files > bin-man-doc-git-files
 %check
 
 # Tests to skip on all releases and architectures
-# t9128-git-svn-cmd-branch - "branch tests" fails randomnly
-# t9167-git-svn-cmd-branch-subproject - "branch tests" fails randomnly
-GIT_SKIP_TESTS="t9128.3 t9167.3"
+GIT_SKIP_TESTS=""
 
 export GIT_SKIP_TESTS
 
@@ -591,9 +585,6 @@ export SVNSERVE_PORT=%(shuf -i 9000-9999 -n 1)
 
 # Run the tests
 make %{?make_test_opts} test
-
-%clean
-rm -rf %{buildroot}
 
 %if %{use_systemd}
 %post daemon
@@ -612,6 +603,8 @@ rm -rf %{buildroot}
 %{_datadir}/git-core/templates/hooks/pre-rebase.sample
 %{_datadir}/git-core/templates/hooks/prepare-commit-msg.sample
 
+%files all
+# No files for you!
 %files core -f bin-files-core
 %license COPYING
 # exclude is best way here because of troubles with symlinks inside git-core/
@@ -630,65 +623,12 @@ rm -rf %{buildroot}
 %{!?_without_docs: %doc contrib/subtree/git-subtree.html}
 %endif
 
-
-%files p4
-%{gitexecdir}/*p4*
-%{gitexecdir}/mergetools/p4merge
-%doc Documentation/*p4*.txt
-%{!?_without_docs: %{_mandir}/man1/*p4*.1*}
-%{!?_without_docs: %doc Documentation/*p4*.html }
-
-%files svn
-%{gitexecdir}/*svn*
-%doc Documentation/*svn*.txt
-%{!?_without_docs: %{_mandir}/man1/*svn*.1*}
-%{!?_without_docs: %doc Documentation/*svn*.html }
-
 %files cvs
 %doc Documentation/*git-cvs*.txt
 %{_bindir}/git-cvsserver
 %{gitexecdir}/*cvs*
 %{!?_without_docs: %{_mandir}/man1/*cvs*.1*}
 %{!?_without_docs: %doc Documentation/*git-cvs*.html }
-
-%files email
-%doc Documentation/*email*.txt
-%{gitexecdir}/*email*
-%{!?_without_docs: %{_mandir}/man1/*email*.1*}
-%{!?_without_docs: %doc Documentation/*email*.html }
-
-%files gui
-%{gitexecdir}/git-gui*
-%{gitexecdir}/git-citool
-%{_datadir}/applications/*git-gui.desktop
-%{_datadir}/git-gui/
-%{!?_without_docs: %{_mandir}/man1/git-gui.1*}
-%{!?_without_docs: %doc Documentation/git-gui.html}
-%{!?_without_docs: %{_mandir}/man1/git-citool.1*}
-%{!?_without_docs: %doc Documentation/git-citool.html}
-
-%files gitk
-%doc Documentation/*gitk*.txt
-%{_bindir}/*gitk*
-%{_datadir}/gitk
-%{!?_without_docs: %{_mandir}/man1/*gitk*.1*}
-%{!?_without_docs: %doc Documentation/*gitk*.html }
-
-%files perl-Git -f perl-git-files
-%exclude %{_mandir}/man3/*Git*SVN*.3pm*
-%{!?_without_docs: %{_mandir}/man3/*Git*.3pm*}
-
-%files perl-Git-SVN -f perl-git-svn-files
-%{!?_without_docs: %{_mandir}/man3/*Git*SVN*.3pm*}
-
-%files -n emacs-%{name}
-%doc contrib/emacs/README
-%dir %{elispdir}
-%{elispdir}/*.elc
-%{_emacs_sitestartdir}/git-init.el
-
-%files -n emacs-%{name}-el
-%{elispdir}/*.el
 
 %files daemon
 %doc Documentation/*daemon*.txt
@@ -703,17 +643,85 @@ rm -rf %{buildroot}
 %{!?_without_docs: %{_mandir}/man1/*daemon*.1*}
 %{!?_without_docs: %doc Documentation/*daemon*.html}
 
+%files -n emacs-%{name}
+%doc contrib/emacs/README
+%dir %{elispdir}
+%{elispdir}/*.elc
+%{_emacs_sitestartdir}/git-init.el
+
+%files -n emacs-%{name}-el
+%{elispdir}/*.el
+
+%files email
+%doc Documentation/*email*.txt
+%{gitexecdir}/*email*
+%{!?_without_docs: %{_mandir}/man1/*email*.1*}
+%{!?_without_docs: %doc Documentation/*email*.html }
+
+%files gitk
+%doc Documentation/*gitk*.txt
+%{_bindir}/*gitk*
+%{_datadir}/gitk
+%{!?_without_docs: %{_mandir}/man1/*gitk*.1*}
+%{!?_without_docs: %doc Documentation/*gitk*.html }
+
 %files gitweb
 %doc gitweb/INSTALL gitweb/README
 %config(noreplace)%{_sysconfdir}/gitweb.conf
 %config(noreplace)%{_sysconfdir}/httpd/conf.d/git.conf
 %{_localstatedir}/www/git/
 
+%files gui
+%{gitexecdir}/git-gui*
+%{gitexecdir}/git-citool
+%{_datadir}/applications/*git-gui.desktop
+%{_datadir}/git-gui/
+%{!?_without_docs: %{_mandir}/man1/git-gui.1*}
+%{!?_without_docs: %doc Documentation/git-gui.html}
+%{!?_without_docs: %{_mandir}/man1/git-citool.1*}
+%{!?_without_docs: %doc Documentation/git-citool.html}
 
-%files all
-# No files for you!
+%files p4
+%{gitexecdir}/*p4*
+%{gitexecdir}/mergetools/p4merge
+%doc Documentation/*p4*.txt
+%{!?_without_docs: %{_mandir}/man1/*p4*.1*}
+%{!?_without_docs: %doc Documentation/*p4*.html }
+
+%files perl-Git -f perl-git-files
+%exclude %{_mandir}/man3/*Git*SVN*.3pm*
+%{!?_without_docs: %{_mandir}/man3/*Git*.3pm*}
+
+%files perl-Git-SVN -f perl-git-svn-files
+%{!?_without_docs: %{_mandir}/man3/*Git*SVN*.3pm*}
+
+%files subtree
+%{gitexecdir}/git-subtree
+#{_pkgdocdir}/git-subtree.txt
+%doc Documentation/git-subtree.txt
+%{!?_without_docs: %{_mandir}/man1/git-subtree.1*}
+%{!?_without_docs: %{_pkgdocdir}/git-subtree.html}
+
+%files svn
+%{gitexecdir}/*svn*
+%doc Documentation/*svn*.txt
+%{!?_without_docs: %{_mandir}/man1/*svn*.1*}
+%{!?_without_docs: %doc Documentation/*svn*.html }
+
+
 
 %changelog
+* Fri Feb 16 2018 Ben Harper <ben.harper@rackspace.com> - 2.16.2-1.ius
+- Latest upstream
+- add Patch2 to address git-svn segfaults and enable some tests from Fedora:
+  https://src.fedoraproject.org/rpms/git/c/a51e1362a262cc4a7eddbd678e10477e1c11f2a5
+- remove old EL5 stuff from Fedora:
+  https://src.fedoraproject.org/rpms/git/c/b30f47c653188f335da71a1b946f4e7703a06d1d
+- alphabetize packages and files from Fedora:
+  https://src.fedoraproject.org/rpms/git/c/f9c3604c48871ebdf4790ad7bbf70940a1b97310
+- new git-subtree subpackage from Fedora:
+  https://src.fedoraproject.org/rpms/git/c/986b772e5516e1a4a762931959576dcf070722e8
+
 * Wed Jan 24 2018 Ben Harper <ben.harper@rackspace.com> - 2.16.1-1.ius
 - Latest upstream
 - Remove Patch2, fixed upstream
