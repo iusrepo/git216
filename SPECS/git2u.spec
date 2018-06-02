@@ -3,18 +3,18 @@
 %global gitexecdir          %{_libexecdir}/git-core
 %global use_prebuilt_docs   0
 
-# Settings for F-19+ and EL-7+
+# Settings for Fedora and EL >= 7
 %if 0%{?fedora} || 0%{?rhel} >= 7
 %global bashcomp_pkgconfig  1
-%global bashcompdir %(pkg-config --variable=completionsdir bash-completion 2>/dev/null)
-%global bashcomproot %(dirname %{bashcompdir} 2>/dev/null)
+%global bashcompdir         %(pkg-config --variable=completionsdir bash-completion 2>/dev/null)
+%global bashcomproot        %(dirname %{bashcompdir} 2>/dev/null)
 %global libsecret           1
 %global use_new_rpm_filters 1
 %global use_systemd         1
 %else
 %global bashcomp_pkgconfig  0
-%global bashcompdir %{_sysconfdir}/bash_completion.d
-%global bashcomproot %{bashcompdir}
+%global bashcompdir         %{_sysconfdir}/bash_completion.d
+%global bashcomproot        %{bashcompdir}
 %global libsecret           0
 %global use_new_rpm_filters 0
 %global use_systemd         0
@@ -41,7 +41,7 @@
 %global ius_suffix 2u
 
 Name:           git%{?ius_suffix}
-Version:        2.16.2
+Version:        2.16.4
 Release:        1.ius%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
@@ -59,8 +59,6 @@ Source16:       git.socket
 Patch0:         git-1.8-gitweb-home-link.patch
 # https://bugzilla.redhat.com/490602
 Patch1:         git-cvsimport-Ignore-cvsps-2.2b1-Branches-output.patch
-# https://public-inbox.org/git/20180129231653.GA22834@starla/
-Patch2:         0001-git-svn-control-destruction-order-to-avoid-segfault.patch
 
 %if ! 0%{?_without_docs}
 BuildRequires:  asciidoc >= 8.4.1
@@ -222,7 +220,7 @@ Requires:       %{name} = %{version}-%{release}
 %if %{use_systemd}
 Requires:       systemd
 Requires(post): systemd
-Requires(preun): systemd
+Requires(preun):  systemd
 Requires(postun): systemd
 %else
 Requires:       xinetd
@@ -308,7 +306,6 @@ Conflicts:      git-gui < %{version}
 %description gui
 %{summary}.
 
-
 %package p4
 Summary:        Git tools for working with Perforce depots
 BuildArch:      noarch
@@ -358,6 +355,7 @@ Summary:        Git tools to merge and split repositories
 Requires:       git-core = %{version}-%{release}
 Provides:	git-subtree = %{version}-%{release}
 Conflicts:	git-subtree < %{version}
+
 %description subtree
 Git subtrees allow subprojects to be included within a subdirectory
 of the main project, optionally including the subproject's entire
@@ -550,8 +548,7 @@ install -pm 644 contrib/completion/git-prompt.sh \
     %{buildroot}%{_datadir}/git-core/contrib/completion/
 
 # install git-gui .desktop file
-desktop-file-install \
-  --dir=%{buildroot}%{_datadir}/applications %{SOURCE13}
+desktop-file-install --dir=%{buildroot}%{_datadir}/applications %{SOURCE13}
 
 # find translations
 %find_lang git git.lang
@@ -605,6 +602,7 @@ make %{?make_test_opts} test
 
 %files all
 # No files for you!
+
 %files core -f bin-files-core
 %license COPYING
 # exclude is best way here because of troubles with symlinks inside git-core/
@@ -708,9 +706,10 @@ make %{?make_test_opts} test
 %{!?_without_docs: %{_mandir}/man1/*svn*.1*}
 %{!?_without_docs: %doc Documentation/*svn*.html }
 
-
-
 %changelog
+* Fri Jun 01 2018 Carl George <carl@george.computer> - 2.16.4-1.ius
+- Upstream 2.16.4, including fixes for CVE-2018-11233 and CVE-2018-11235
+
 * Fri Feb 16 2018 Ben Harper <ben.harper@rackspace.com> - 2.16.2-1.ius
 - Latest upstream
 - add Patch2 to address git-svn segfaults and enable some tests from Fedora:
