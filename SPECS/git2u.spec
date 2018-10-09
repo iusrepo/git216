@@ -41,7 +41,7 @@
 %global ius_suffix 2u
 
 Name:           git%{?ius_suffix}
-Version:        2.16.4
+Version:        2.16.5
 Release:        1.ius%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
@@ -707,6 +707,9 @@ make %{?make_test_opts} test
 %{!?_without_docs: %doc Documentation/*svn*.html }
 
 %changelog
+* Tue Oct 09 2018 Carl George <carl@george.computer> - 2.16.5-1.ius
+- Upstream 2.16.5, including fix for CVE-2018-17456
+
 * Fri Jun 01 2018 Carl George <carl@george.computer> - 2.16.4-1.ius
 - Upstream 2.16.4, including fixes for CVE-2018-11233 and CVE-2018-11235
 
