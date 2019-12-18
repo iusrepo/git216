@@ -42,7 +42,7 @@
 
 Name:           git%{?ius_suffix}
 Version:        2.16.5
-Release:        1.ius%{?dist}
+Release:        1%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
 URL:            https://git-scm.com
