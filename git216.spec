@@ -39,8 +39,8 @@
 %endif
 
 Name:           git216
-Version:        2.16.5
-Release:        2%{?dist}
+Version:        2.16.6
+Release:        1%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
 URL:            https://git-scm.com
@@ -813,6 +813,9 @@ make %{?make_test_opts} test
 %{!?_without_docs: %doc Documentation/*svn*.html }
 
 %changelog
+* Thu Dec 19 2019 Carl George <carl@george.computer> - 2.16.6-1
+- Latest upstream
+
 * Thu Dec 19 2019 Carl George <carl@george.computer> - 2.16.5-2
 - Rename from git2u to git216
 
