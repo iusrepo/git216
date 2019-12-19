@@ -38,11 +38,9 @@
 %global make_test_opts -O %{?_smp_mflags}
 %endif
 
-%global ius_suffix 2u
-
-Name:           git%{?ius_suffix}
+Name:           git216
 Version:        2.16.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
 URL:            https://git-scm.com
@@ -124,9 +122,14 @@ Requires:       perl(Term::ReadKey)
 %endif
 Requires:       %{name}-perl-Git = %{version}-%{release}
 
+# rename from git2u to git216
+Obsoletes:      git2u < 2.16.5-2
+Provides:       git2u = %{version}-%{release}
+
+# safe replacement
 Provides:       git = %{version}-%{release}
 Provides:       git%{?_isa} = %{version}-%{release}
-Conflicts:      git < %{version}
+Conflicts:      git < %{version}-%{release}
 
 # The bzr and hg remote helper scripts have been effectively removed from the
 # upstream source and are now maintained independently.
@@ -135,8 +138,8 @@ Conflicts:      git < %{version}
 # https://github.com/git/git/blob/v2.7.0/contrib/remote-helpers/git-remote-hg
 #
 # Obsolete them here to provide a clean upgrade path.
-Obsoletes:      %{name}-bzr <= 2.6.4-2.ius
-Obsoletes:      %{name}-hg <= 2.6.4-2.ius
+Obsoletes:      git2u-bzr <= 2.6.4-2.ius
+Obsoletes:      git2u-hg <= 2.6.4-2.ius
 
 %description
 Git is a fast, scalable, distributed revision control system with an
@@ -163,8 +166,14 @@ Requires:       %{name}-perl-Git = %{version}-%{release}
 Requires:       perl(Term::ReadKey)
 %endif
 Requires:       emacs-%{name} = %{version}-%{release}
+
+# rename from git2u-all to git216-all
+Obsoletes:      git2u-all < 2.16.5-2
+Provides:       git2u-all = %{version}-%{release}
+
+# safe replacement
 Provides:       git-all = %{version}-%{release}
-Conflicts:      git-all < %{version}
+Conflicts:      git-all < %{version}-%{release}
 
 %description all
 Git is a fast, scalable, distributed revision control system with an
@@ -178,9 +187,15 @@ Summary:        Core package of git with minimal functionality
 Requires:       less
 Requires:       openssh-clients
 Requires:       zlib >= 1.2
+
+# rename from git2u-core to git216-core
+Obsoletes:      git2u-core < 2.16.5-2
+Provides:       git2u-core = %{version}-%{release}
+
+# safe replacement
 Provides:       git-core = %{version}-%{release}
 Provides:       git-core%{?_isa} = %{version}-%{release}
-Conflicts:      git-core < %{version}
+Conflicts:      git-core < %{version}-%{release}
 
 %description core
 Git is a fast, scalable, distributed revision control system with an
@@ -196,8 +211,14 @@ other SCMs, install the git-all meta-package.
 Summary:        Documentation files for git-core
 BuildArch:      noarch
 Requires:       %{name}-core = %{version}-%{release}
+
+# rename from git2u-core-doc to git216-core-doc
+Obsoletes:      git2u-core-doc < 2.16.5-2
+Provides:       git2u-core-doc = %{version}-%{release}
+
+# safe replacement
 Provides:       git-core-doc = %{version}-%{release}
-Conflicts:      git-core-doc < %{version}
+Conflicts:      git-core-doc < %{version}-%{release}
 
 %description core-doc
 Documentation files for git-core package including man pages.
@@ -208,8 +229,14 @@ BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}, cvs
 Requires:       cvsps
 Requires:       perl(DBD::SQLite)
+
+# rename from git2u-cvs to git216-cvs
+Obsoletes:      git2u-cvs < 2.16.5-2
+Provides:       git2u-cvs = %{version}-%{release}
+
+# safe replacement
 Provides:       git-cvs = %{version}-%{release}
-Conflicts:      git-cvs < %{version}
+Conflicts:      git-cvs < %{version}-%{release}
 
 %description cvs
 %{summary}.
@@ -225,9 +252,15 @@ Requires(postun): systemd
 %else
 Requires:       xinetd
 %endif
+
+# rename from git2u-daemon to git216-daemon
+Obsoletes:      git2u-daemon < 2.16.5-2
+Provides:       git2u-daemon = %{version}-%{release}
+
+# safe replacement
 Provides:       git-daemon = %{version}-%{release}
 Provides:       git-daemon%{?_isa} = %{version}-%{release}
-Conflicts:      git-daemon < %{version}
+Conflicts:      git-daemon < %{version}-%{release}
 
 %description daemon
 The git daemon for supporting git:// access to git repositories
@@ -239,45 +272,71 @@ Requires:       %{name} = %{version}-%{release}
 Requires:       %{name}-perl-Git = %{version}-%{release}
 Requires:       perl(Authen::SASL)
 Requires:       perl(Net::SMTP::SSL)
+
+# rename from git2u-email to git216-email
+Obsoletes:      git2u-email < 2.16.5-2
+Provides:       git2u-email = %{version}-%{release}
+
+# safe replacement
 Provides:       git-email = %{version}-%{release}
-Conflicts:      git-email < %{version}
+Conflicts:      git-email < %{version}-%{release}
 
 %description email
 Git tools for sending email.
 
-%package -n emacs-%{name}
+%package emacs-git
 Summary:        Git version control system support for Emacs
 Requires:       %{name} = %{version}-%{release}
 BuildArch:      noarch
 Requires:       emacs(bin) >= %{_emacs_version}
-Provides:       emacs-git = %{version}-%{release}
-Conflicts:      emacs-git < %{version}
 
-%description -n emacs-%{name}
+# rename from emacs-git2u to git216-emacs-git
+Obsoletes:      emacs-git2u < 2.16.5-2
+Provides:       emacs-git2u = %{version}-%{release}
+
+# safe replacement
+Provides:       emacs-git = %{version}-%{release}
+Conflicts:      emacs-git < %{version}-%{release}
+
+%description emacs-git
 %{summary}.
 
-%package -n emacs-%{name}-el
+%package emacs-git-el
 Summary:        Elisp source files for git version control system support for Emacs
 BuildArch:      noarch
-Requires:       emacs-%{name} = %{version}-%{release}
-Provides:       emacs-git-el = %{version}-%{release}
-Conflicts:      emacs-git-el < %{version}
-# rename from emacs-git-el2u to emacs-git2u-el
-Provides:       emacs-git-el%{?ius_suffix} = %{version}-%{release}
-Obsoletes:      emacs-git-el%{?ius_suffix} <= 2.1.3-2.ius
+Requires:       %{name}-emacs-git = %{version}-%{release}
 
-%description -n emacs-%{name}-el
+# rename from emacs-git-el2u to emacs-git2u-el
+Obsoletes:      emacs-git-el2u <= 2.1.3-2.ius
+Provides:       emacs-git-el2u = %{version}-%{release}
+
+# rename from emacs-git2u-el to git216-emacs-git-el
+Obsoletes:      emacs-git2u-el < 2.16.5-2
+Provides:       emacs-git2u-el = %{version}-%{release}
+
+# safe replacement
+Provides:       emacs-git-el = %{version}-%{release}
+Conflicts:      emacs-git-el < %{version}-%{release}
+
+%description emacs-git-el
 %{summary}.
 
 %package gitk
 Summary:        Git repository browser
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}, tk >= 8.4
-Provides:       gitk = %{version}-%{release}
-Conflicts:      gitk < %{version}
+
 # rename from gitk2u to git2u-gitk
-Provides:       gitk%{?ius_suffix} = %{version}-%{release}
-Obsoletes:      gitk%{?ius_suffix} <= 2.6.4-2.ius
+Obsoletes:      gitk2u <= 2.6.4-2.ius
+Provides:       gitk2u = %{version}-%{release}
+
+# rename from git2u-gitk to git216-gitk
+Obsoletes:      git2u-gitk < 2.16.5-2
+Provides:       git2u-gitk = %{version}-%{release}
+
+# safe replacement
+Provides:       gitk = %{version}-%{release}
+Conflicts:      gitk < %{version}-%{release}
 
 %description gitk
 %{summary}.
@@ -286,11 +345,18 @@ Obsoletes:      gitk%{?ius_suffix} <= 2.6.4-2.ius
 Summary:        Simple web interface to git repositories
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
-Provides:       gitweb = %{version}-%{release}
-Conflicts:      gitweb < %{version}
+
 # rename from gitweb2u to git2u-gitweb
-Provides:       gitweb%{?ius_suffix} = %{version}-%{release}
-Obsoletes:      gitweb%{?ius_suffix} <= 2.6.4-2.ius
+Obsoletes:      gitweb2u <= 2.6.4-2.ius
+Provides:       gitweb2u = %{version}-%{release}
+
+# rename from git2u-gitweb to git216-gitweb
+Obsoletes:      git2u-gitweb < 2.16.5-2
+Provides:       git2u-gitweb = %{version}-%{release}
+
+# safe replacement
+Provides:       gitweb = %{version}-%{release}
+Conflicts:      gitweb < %{version}-%{release}
 
 %description gitweb
 %{summary}.
@@ -300,8 +366,14 @@ Summary:        Graphical interface to Git
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}, tk >= 8.4
 Requires:       %{name}-gitk = %{version}-%{release}
+
+# rename from git2u-gui to git216-gui
+Obsoletes:      git2u-gui < 2.16.5-2
+Provides:       git2u-gui = %{version}-%{release}
+
+# safe replacement
 Provides:       git-gui = %{version}-%{release}
-Conflicts:      git-gui < %{version}
+Conflicts:      git-gui < %{version}-%{release}
 
 %description gui
 %{summary}.
@@ -311,8 +383,14 @@ Summary:        Git tools for working with Perforce depots
 BuildArch:      noarch
 BuildRequires:  python2-devel
 Requires:       %{name} = %{version}-%{release}
+
+# rename from git2u-p4 to git216-p4
+Obsoletes:      git2u-p4 < 2.16.5-2
+Provides:       git2u-p4 = %{version}-%{release}
+
+# safe replacement
 Provides:       git-p4 = %{version}-%{release}
-Conflicts:      git-p4 < %{version}
+Conflicts:      git-p4 < %{version}-%{release}
 
 %description p4
 %{summary}.
@@ -324,11 +402,18 @@ Requires:       %{name} = %{version}-%{release}
 BuildRequires:  perl(Error), perl(ExtUtils::MakeMaker)
 Requires:       perl(Error)
 Requires:       perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
-Provides:       perl-Git = %{version}-%{release}
-Conflicts:      perl-Git < %{version}
+
 # rename from perl-Git2u to git2u-perl-Git
-Provides:       perl-Git%{?ius_suffix} = %{version}-%{release}
-Obsoletes:      perl-Git%{?ius_suffix} <= 2.6.4-2.ius
+Obsoletes:      perl-Git2u <= 2.6.4-2.ius
+Provides:       perl-Git2u = %{version}-%{release}
+
+# rename from git2u-perl-Git to git216-perl-Git
+Obsoletes:      git2u-perl-Git < 2.16.5-2
+Provides:       git2u-perl-Git = %{version}-%{release}
+
+# safe replacement
+Provides:       perl-Git = %{version}-%{release}
+Conflicts:      perl-Git < %{version}-%{release}
 
 %description perl-Git
 %{summary}.
@@ -338,14 +423,22 @@ Summary:        Perl interface to Git::SVN
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
 Requires:       perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
-Provides:       perl-Git-SVN = %{version}-%{release}
-Conflicts:      perl-Git-SVN < %{version}
+
 # rename from perl-Git-SVN2u to perl-Git2u-SVN
-Provides:       perl-Git-SVN%{?ius_suffix} = %{version}-%{release}
-Obsoletes:      perl-Git-SVN%{?ius_suffix} <= 2.1.3-2.ius
+Obsoletes:      perl-Git-SVN2u <= 2.1.3-2.ius
+Provides:       perl-Git-SVN2u = %{version}-%{release}
+
 # rename from perl-Git2u-SVN to git2u-perl-Git-SVN
-Provides:       perl-Git%{?ius_suffix}-SVN = %{version}-%{release}
-Obsoletes:      perl-Git%{?ius_suffix}-SVN <= 2.6.4-2.ius
+Obsoletes:      perl-Git2u-SVN <= 2.6.4-2.ius
+Provides:       perl-Git2u-SVN = %{version}-%{release}
+
+# rename from git2u-perl-Git-SVN to git216-perl-Git-SVN
+Obsoletes:      git2u-perl-Git-SVN < 2.16.5-2
+Provides:       git2u-perl-Git-SVN = %{version}-%{release}
+
+# safe replacement
+Provides:       perl-Git-SVN = %{version}-%{release}
+Conflicts:      perl-Git-SVN < %{version}-%{release}
 
 %description perl-Git-SVN
 Perl interface to Git.
@@ -353,8 +446,15 @@ Perl interface to Git.
 %package subtree
 Summary:        Git tools to merge and split repositories
 Requires:       git-core = %{version}-%{release}
-Provides:	git-subtree = %{version}-%{release}
-Conflicts:	git-subtree < %{version}
+
+# rename from git2u-subtree to git216-subtree
+Obsoletes:      git2u-subtree < 2.16.5-2
+Provides:       git2u-subtree = %{version}-%{release}
+
+# safe replacement
+Provides:       git-subtree = %{version}-%{release}
+Provides:       git-subtree%{?_isa} = %{version}-%{release}
+Conflicts:      git-subtree < %{version}-%{release}
 
 %description subtree
 Git subtrees allow subprojects to be included within a subdirectory
@@ -368,9 +468,15 @@ Requires:       perl(Digest::MD5)
 %if ! %{defined perl_bootstrap}
 Requires:       perl(Term::ReadKey)
 %endif
+
+# rename from git2u-svn to git216-svn
+Obsoletes:      git2u-svn < 2.16.5-2
+Provides:       git2u-svn = %{version}-%{release}
+
+# safe replacement
 Provides:       git-svn = %{version}-%{release}
 Provides:       git-svn%{?_isa} = %{version}-%{release}
-Conflicts:      git-svn < %{version}
+Conflicts:      git-svn < %{version}-%{release}
 
 %description svn
 %{summary}.
@@ -641,13 +747,13 @@ make %{?make_test_opts} test
 %{!?_without_docs: %{_mandir}/man1/*daemon*.1*}
 %{!?_without_docs: %doc Documentation/*daemon*.html}
 
-%files -n emacs-%{name}
+%files emacs-git
 %doc contrib/emacs/README
 %dir %{elispdir}
 %{elispdir}/*.elc
 %{_emacs_sitestartdir}/git-init.el
 
-%files -n emacs-%{name}-el
+%files emacs-git-el
 %{elispdir}/*.el
 
 %files email
@@ -707,6 +813,9 @@ make %{?make_test_opts} test
 %{!?_without_docs: %doc Documentation/*svn*.html }
 
 %changelog
+* Thu Dec 19 2019 Carl George <carl@george.computer> - 2.16.5-2
+- Rename from git2u to git216
+
 * Tue Oct 09 2018 Carl George <carl@george.computer> - 2.16.5-1.ius
 - Upstream 2.16.5, including fix for CVE-2018-17456
 
