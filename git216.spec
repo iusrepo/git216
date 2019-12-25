@@ -40,7 +40,7 @@
 
 Name:           git216
 Version:        2.16.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Fast Version Control System
 License:        GPLv2
 URL:            https://git-scm.com
@@ -165,7 +165,7 @@ Requires:       %{name}-perl-Git = %{version}-%{release}
 %if ! %{defined perl_bootstrap}
 Requires:       perl(Term::ReadKey)
 %endif
-Requires:       emacs-%{name} = %{version}-%{release}
+Requires:       %{name}-emacs-git = %{version}-%{release}
 
 # rename from git2u-all to git216-all
 Obsoletes:      git2u-all < 2.16.5-2
@@ -813,6 +813,9 @@ make %{?make_test_opts} test
 %{!?_without_docs: %doc Documentation/*svn*.html }
 
 %changelog
+* Wed Dec 25 2019 Carl George <carl@george.computer> - 2.16.6-2
+- Correct git216-all requirement on git216-emacs-git
+
 * Thu Dec 19 2019 Carl George <carl@george.computer> - 2.16.6-1
 - Latest upstream
 
